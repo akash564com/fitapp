@@ -1,0 +1,17 @@
+# translations/en.json
+{
+  "welcome": "Welcome to FitAI",
+  "workout_btn": "Generate Workout"
+}
+
+# translations/hi.json
+{
+  "welcome": "FitAI में आपका स्वागत है",
+  "workout_btn": "वर्कआउट बनाएं"
+}
+
+# app.py
+@app.route('/set_language', methods=['POST'])
+def set_language():
+    session['lang'] = request.json['language']
+    return jsonify(success=True)
