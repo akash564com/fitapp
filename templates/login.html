@@ -1,0 +1,42 @@
+<div class="firebase-auth-container" id="firebase-auth-container"></div>
+<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
+<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
+<script>
+  const firebaseConfig = {
+    apiKey: "YOUR_API_KEY",
+    authDomain: "your-project.firebaseapp.com",
+    projectId: "your-project"
+  };
+  
+  firebase.initializeApp(firebaseConfig);
+  const auth = firebase.auth();
+  
+  // Google Auth
+  const googleProvider = new firebase.auth.GoogleAuthProvider();
+  document.getElementById('google-login').addEventListener('click', () => {
+    auth.signInWithPopup(googleProvider).then((result) => {
+      const idToken = result.user.getIdToken();
+      // Send token to Flask backend
+      fetch('/login', {
+        method: 'POST',
+        body: JSON.stringify({ id_token: idToken }),
+        headers: { 'Content-Type': 'application/json' }
+      });
+    });
+  });
+  
+  // Email Auth
+  document.getElementById('email-login').addEventListener('submit', (e) => {
+    e.preventDefault();
+    const email = e.target.email.value;
+    const password = e.target.password.value;
+    
+    auth.signInWithEmailAndPassword(email, password)
+      .then((userCredential) => {
+        // Handle successful login
+      })
+      .catch((error) => {
+        flashError(error.message);
+      });
+  });
+</script>
