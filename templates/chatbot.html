@@ -1,0 +1,83 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="chat-container max-w-4xl mx-auto bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
+    <div class="chat-header bg-indigo-600 text-white p-4">
+        <h2 class="text-xl font-bold">Fitness Assistant</h2>
+    </div>
+    
+    <div id="chat-history" class="p-4 h-96 overflow-y-auto">
+        <div class="chat-bubble received animate-fade-in">
+            <div class="avatar">
+                <i class="fas fa-robot text-indigo-500"></i>
+            </div>
+            <div class="message">
+                Hello! I'm your fitness assistant. How can I help you today?
+            </div>
+        </div>
+    </div>
+    
+    <div class="chat-input p-4 bg-gray-100 dark:bg-gray-700">
+        <form id="chat-form" class="flex">
+            <input type="text" id="user-input" placeholder="Ask about fitness, nutrition..." 
+                   class="flex-grow p-3 rounded-l-lg border-0 focus:ring-2 focus:ring-indigo-500">
+            <button type="submit" class="bg-indigo-600 text-white px-6 rounded-r-lg">
+                <i class="fas fa-paper-plane"></i>
+            </button>
+        </form>
+    </div>
+</div>
+
+<script>
+    const chatForm = document.getElementById('chat-form');
+    const chatHistory = document.getElementById('chat-history');
+    
+    chatForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        const userInput = document.getElementById('user-input').value;
+        
+        // Add user message
+        addMessage(userInput, 'sent');
+        
+        // Show loading indicator
+        const loadingBubble = addMessage('Thinking...', 'received', true);
+        
+        try {
+            // Send to Flask backend
+            const response = await fetch('/chat', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify({ message: userInput })
+            });
+            
+            const data = await response.json();
+            
+            // Remove loading indicator
+            loadingBubble.remove();
+            
+            // Add AI response
+            addMessage(data.response, 'received');
+        } catch (error) {
+            loadingBubble.remove();
+            addMessage('Error connecting to assistant', 'received');
+        }
+        
+        chatForm.reset();
+    });
+    
+    function addMessage(text, type, isLoading = false) {
+        const bubble = document.createElement('div');
+        bubble.className = `chat-bubble ${type} animate-fade-in`;
+        bubble.innerHTML = `
+            <div class="avatar">
+                ${type === 'sent' ? 
+                  '<i class="fas fa-user text-blue-500"></i>' : 
+                  '<i class="fas fa-robot text-indigo-500"></i>'}
+            </div>
+            <div class="message">${text}</div>
+        `;
+        chatHistory.appendChild(bubble);
+        chatHistory.scrollTop = chatHistory.scrollHeight;
+        return isLoading ? bubble : null;
+    }
+</script>
