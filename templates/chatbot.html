@@ -1,92 +1,858 @@
-{% extends "base.html" %}
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitAI - Your Fitness Assistant</title>
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Animation Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/ScrollTrigger.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #10b981;
+            --dark: #0f172a;
+            --light: #f8fafc;
+            --gray: #94a3b8;
+            --card-bg: rgba(15, 23, 42, 0.7);
+            --user-bubble: rgba(99, 102, 241, 0.2);
+            --bot-bubble: rgba(15, 23, 42, 0.5);
+        }
 
-{% block content %}
-<div class="chat-container max-w-4xl mx-auto bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
-    <div class="chat-header bg-indigo-600 text-white p-4">
-        <h2 class="text-xl font-bold">Fitness Assistant</h2>
-    </div>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f172a, #1e293b);
+            color: var(--light);
+            min-height: 100vh;
+            overflow-x: hidden;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .hero-pattern {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.15) 0%, transparent 20%),
+                radial-gradient(circle at 80% 80%, rgba(16, 185, 129, 0.15) 0%, transparent 20%);
+            z-index: -1;
+        }
+
+        .gradient-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at center, rgba(15, 23, 42, 0) 0%, rgba(15, 23, 42, 1) 70%);
+            z-index: -1;
+        }
+
+        /* Top Navigation */
+        .top-nav {
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 90;
+            height: 70px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+        }
+
+        .logo i {
+            color: var(--primary);
+            font-size: 1.8rem;
+        }
+
+        .nav-controls {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            background: rgba(99, 102, 241, 0.1);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .user-profile:hover {
+            background: rgba(99, 102, 241, 0.2);
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .controls {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .control-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .control-btn:hover {
+            background: rgba(99, 102, 241, 0.1);
+            color: white;
+        }
+
+        /* Chatbot Container */
+        .chatbot-container {
+            max-width: 1200px;
+            margin: 100px auto 2rem;
+            padding: 0 2rem;
+            display: flex;
+            flex-direction: column;
+            height: calc(100vh - 120px);
+        }
+
+        .chat-header {
+            text-align: center;
+            margin-bottom: 2rem;
+            position: relative;
+        }
+
+        .chat-header h1 {
+            font-size: 2.8rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .chat-header p {
+            color: var(--gray);
+            max-width: 600px;
+            margin: 0 auto;
+            line-height: 1.6;
+        }
+
+        .chat-illustration {
+            position: absolute;
+            top: 0;
+            right: 0;
+            opacity: 0.1;
+            z-index: -1;
+        }
+
+        .chat-wrapper {
+            display: flex;
+            flex: 1;
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 25px;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+
+        .chat-sidebar {
+            width: 300px;
+            background: rgba(15, 23, 42, 0.9);
+            border-right: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .ai-assistant {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 2rem;
+        }
+
+        .ai-avatar {
+            width: 60px;
+            height: 60px;
+            border-radius: 50%;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.8rem;
+        }
+
+        .ai-info h3 {
+            font-size: 1.3rem;
+            margin-bottom: 0.2rem;
+        }
+
+        .ai-info p {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        .ai-status {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+            padding: 0.5rem 1rem;
+            background: rgba(16, 185, 129, 0.1);
+            border-radius: 50px;
+            margin-top: 0.5rem;
+        }
+
+        .status-indicator {
+            width: 10px;
+            height: 10px;
+            border-radius: 50%;
+            background: var(--secondary);
+        }
+
+        .chat-topics {
+            margin-top: 2rem;
+        }
+
+        .topics-header {
+            color: var(--gray);
+            font-size: 0.9rem;
+            text-transform: uppercase;
+            margin-bottom: 1rem;
+            letter-spacing: 1px;
+        }
+
+        .topic-list {
+            list-style: none;
+        }
+
+        .topic-item {
+            padding: 0.8rem 1rem;
+            border-radius: 10px;
+            margin-bottom: 0.8rem;
+            background: rgba(255, 255, 255, 0.03);
+            cursor: pointer;
+            transition: all 0.3s ease;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .topic-item::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: -100%;
+            width: 100%;
+            height: 100%;
+            background: rgba(99, 102, 241, 0.1);
+            transition: all 0.4s ease;
+            z-index: -1;
+        }
+
+        .topic-item:hover::before {
+            left: 0;
+        }
+
+        .topic-item:hover {
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        .topic-item i {
+            margin-right: 0.8rem;
+            color: var(--primary);
+        }
+
+        /* Chat Main Area */
+        .chat-main {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+        }
+
+        .chat-messages {
+            flex: 1;
+            padding: 2rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .message {
+            max-width: 80%;
+            padding: 1.2rem 1.5rem;
+            border-radius: 18px;
+            position: relative;
+            animation: fadeIn 0.4s cubic-bezier(0.18, 0.89, 0.32, 1.28);
+            transform-origin: bottom;
+        }
+
+        @keyframes fadeIn {
+            from { 
+                opacity: 0; 
+                transform: translateY(20px) scale(0.95);
+            }
+            to { 
+                opacity: 1; 
+                transform: translateY(0) scale(1);
+            }
+        }
+
+        .user-message {
+            background: var(--user-bubble);
+            align-self: flex-end;
+            border-bottom-right-radius: 5px;
+            box-shadow: 0 4px 10px rgba(99, 102, 241, 0.1);
+        }
+
+        .bot-message {
+            background: var(--bot-bubble);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            align-self: flex-start;
+            border-bottom-left-radius: 5px;
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .message-header {
+            display: flex;
+            align-items: center;
+            margin-bottom: 0.5rem;
+        }
+
+        .message-avatar {
+            width: 30px;
+            height: 30px;
+            border-radius: 50%;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-right: 0.8rem;
+            font-size: 0.9rem;
+        }
+
+        .user-message .message-avatar {
+            background: var(--primary);
+        }
+
+        .bot-message .message-avatar {
+            background: var(--secondary);
+        }
+
+        .message-sender {
+            font-weight: 600;
+            font-size: 0.95rem;
+        }
+
+        .message-content {
+            line-height: 1.6;
+        }
+
+        .message-content ul {
+            padding-left: 1.5rem;
+            margin: 0.8rem 0;
+        }
+
+        .message-content li {
+            margin-bottom: 0.5rem;
+        }
+
+        .typing-indicator {
+            display: flex;
+            align-items: center;
+            padding: 1.2rem 1.5rem;
+            background: var(--bot-bubble);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 18px;
+            align-self: flex-start;
+            border-bottom-left-radius: 5px;
+            max-width: 120px;
+        }
+
+        .typing-dot {
+            width: 8px;
+            height: 8px;
+            background: var(--secondary);
+            border-radius: 50%;
+            margin: 0 2px;
+            animation: typing 1.4s infinite ease-in-out;
+        }
+
+        .typing-dot:nth-child(1) { animation-delay: 0s; }
+        .typing-dot:nth-child(2) { animation-delay: 0.2s; }
+        .typing-dot:nth-child(3) { animation-delay: 0.4s; }
+
+        @keyframes typing {
+            0%, 60%, 100% { transform: translateY(0); }
+            30% { transform: translateY(-5px); }
+        }
+
+        .chat-input {
+            padding: 1.5rem 2rem;
+            background: rgba(15, 23, 42, 0.7);
+            display: flex;
+            gap: 1rem;
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .chat-input input {
+            flex: 1;
+            padding: 1rem 1.5rem;
+            border-radius: 50px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .chat-input input:focus {
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.1);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3);
+        }
+
+        .chat-input button {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .chat-input button:hover {
+            background: var(--primary-dark);
+            transform: rotate(10deg);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .chat-sidebar {
+                display: none;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .chatbot-container {
+                padding: 0 1rem;
+                margin-top: 80px;
+            }
+            
+            .chat-header h1 {
+                font-size: 2.2rem;
+            }
+            
+            .message {
+                max-width: 90%;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Elements -->
+    <div class="hero-pattern"></div>
+    <div class="gradient-overlay"></div>
     
-    <div id="chat-history" class="p-4 h-96 overflow-y-auto">
-        <div class="chat-bubble received animate-fade-in">
-            <div class="avatar">
-                <i class="fas fa-robot text-indigo-500"></i>
+    <!-- Top Navigation -->
+    <nav class="top-nav">
+        <div class="logo">
+            <i class="fas fa-dumbbell"></i>
+            <span>FitAI</span>
+        </div>
+        
+        <div class="nav-controls">
+            <div class="controls">
+                <div class="control-btn">
+                    <i class="fas fa-sun"></i>
+                </div>
+                <div class="control-btn">
+                    <i class="fas fa-robot"></i>
+                </div>
             </div>
-            <div class="message">
-                Hello! I'm your fitness assistant. How can I help you today?
+            
+            <div class="user-profile">
+                <div class="user-avatar">JS</div>
+                <div class="user-info">
+                    <div class="user-name">John Smith</div>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Chatbot Container -->
+    <div class="chatbot-container">
+        <div class="chat-header">
+            <h1>Your AI Fitness Assistant</h1>
+            <p>Ask anything about fitness, nutrition, or workout plans and get expert advice</p>
+            <div class="chat-illustration">
+                <lottie-player 
+                    src="https://assets10.lottiefiles.com/packages/lf20_jcikwtux.json" 
+                    background="transparent" 
+                    speed="1" 
+                    style="width: 300px; height: 300px;" 
+                    loop autoplay>
+                </lottie-player>
+            </div>
+        </div>
+        
+        <div class="chat-wrapper">
+            <div class="chat-sidebar">
+                <div class="ai-assistant">
+                    <div class="ai-avatar">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <div class="ai-info">
+                        <h3>FitAI Assistant</h3>
+                        <p>24/7 Fitness Expert</p>
+                        <div class="ai-status">
+                            <div class="status-indicator"></div>
+                            <span>Online now</span>
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="chat-topics">
+                    <div class="topics-header">Popular Topics</div>
+                    <ul class="topic-list">
+                        <li class="topic-item">
+                            <i class="fas fa-dumbbell"></i>
+                            <span>Workout Plans</span>
+                        </li>
+                        <li class="topic-item">
+                            <i class="fas fa-apple-alt"></i>
+                            <span>Nutrition Advice</span>
+                        </li>
+                        <li class="topic-item">
+                            <i class="fas fa-running"></i>
+                            <span>Cardio Exercises</span>
+                        </li>
+                        <li class="topic-item">
+                            <i class="fas fa-weight"></i>
+                            <span>Strength Training</span>
+                        </li>
+                        <li class="topic-item">
+                            <i class="fas fa-heartbeat"></i>
+                            <span>Recovery Tips</span>
+                        </li>
+                        <li class="topic-item">
+                            <i class="fas fa-bolt"></i>
+                            <span>Motivation Tips</span>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="chat-main">
+                <div class="chat-messages" id="chatMessages">
+                    <div class="message bot-message">
+                        <div class="message-header">
+                            <div class="message-avatar">
+                                <i class="fas fa-robot"></i>
+                            </div>
+                            <div class="message-sender">FitAI Assistant</div>
+                        </div>
+                        <div class="message-content">
+                            Hello John! 👋 I'm your FitAI assistant. How can I help you with your fitness goals today? You can ask me about workout plans, nutrition advice, or anything fitness-related!
+                        </div>
+                    </div>
+                    
+                    <div class="message user-message">
+                        <div class="message-header">
+                            <div class="message-avatar">JS</div>
+                            <div class="message-sender">You</div>
+                        </div>
+                        <div class="message-content">
+                            What's a good beginner workout for someone who wants to build muscle?
+                        </div>
+                    </div>
+                    
+                    <div class="message bot-message">
+                        <div class="message-header">
+                            <div class="message-avatar">
+                                <i class="fas fa-robot"></i>
+                            </div>
+                            <div class="message-sender">FitAI Assistant</div>
+                        </div>
+                        <div class="message-content">
+                            Great question! Here's a simple 3-day beginner workout routine for muscle building:<br><br>
+                            
+                            <strong>Day 1: Upper Body</strong>
+                            <ul>
+                                <li>Bench Press: 3 sets of 10 reps</li>
+                                <li>Bent Over Rows: 3 sets of 10 reps</li>
+                                <li>Shoulder Press: 3 sets of 12 reps</li>
+                                <li>Bicep Curls: 3 sets of 15 reps</li>
+                            </ul>
+                            
+                            <strong>Day 2: Lower Body</strong>
+                            <ul>
+                                <li>Squats: 4 sets of 8 reps</li>
+                                <li>Deadlifts: 3 sets of 8 reps</li>
+                                <li>Lunges: 3 sets of 10 reps per leg</li>
+                                <li>Calf Raises: 4 sets of 20 reps</li>
+                            </ul>
+                            
+                            <strong>Day 3: Rest or Cardio</strong>
+                            <ul>
+                                <li>Light cardio or active recovery</li>
+                            </ul>
+                            
+                            Remember to focus on proper form and gradually increase weights over time!
+                        </div>
+                    </div>
+                </div>
+                
+                <div class="chat-input">
+                    <input type="text" id="userInput" placeholder="Ask a fitness question...">
+                    <button id="sendButton">
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
             </div>
         </div>
     </div>
     
-    <div class="chat-input p-4 bg-gray-100 dark:bg-gray-700">
-        <form id="chat-form" class="flex">
-            <input type="text" id="user-input" placeholder="Ask about fitness, nutrition..." 
-                   class="flex-grow p-3 rounded-l-lg border-0 focus:ring-2 focus:ring-indigo-500">
-            <button type="submit" class="bg-indigo-600 text-white px-6 rounded-r-lg">
-                <i class="fas fa-paper-plane"></i>
-            </button>
-        </form>
-    </div>
-</div>
-
-<script>
-    const chatForm = document.getElementById('chat-form');
-    const chatHistory = document.getElementById('chat-history');
-    
-    chatForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
-        const userInput = document.getElementById('user-input').value;
+    <script>
+        // Initialize GSAP animations
+        gsap.registerPlugin(ScrollTrigger);
         
-        // Add user message
-        addMessage(userInput, 'sent');
+        // DOM elements
+        const chatMessages = document.getElementById('chatMessages');
+        const userInput = document.getElementById('userInput');
+        const sendButton = document.getElementById('sendButton');
         
-        // Show loading indicator
-        const loadingBubble = addMessage('Thinking...', 'received', true);
-        
-        try {
-            // Send to Flask backend
-            const response = await fetch('/chat', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify({ message: userInput })
+        // Function to add a message to the chat
+        function addMessage(sender, content, isUser = false) {
+            const messageDiv = document.createElement('div');
+            messageDiv.className = `message ${isUser ? 'user-message' : 'bot-message'}`;
+            
+            const avatar = isUser ? 
+                '<div class="message-avatar">JS</div>' : 
+                '<div class="message-avatar"><i class="fas fa-robot"></i></div>';
+            
+            const senderName = isUser ? 'You' : 'FitAI Assistant';
+            
+            messageDiv.innerHTML = `
+                <div class="message-header">
+                    ${avatar}
+                    <div class="message-sender">${senderName}</div>
+                </div>
+                <div class="message-content">${content}</div>
+            `;
+            
+            // Add to chat with animation
+            messageDiv.style.opacity = '0';
+            messageDiv.style.transform = 'translateY(20px) scale(0.95)';
+            chatMessages.appendChild(messageDiv);
+            
+            gsap.to(messageDiv, {
+                duration: 0.4,
+                opacity: 1,
+                transform: 'translateY(0) scale(1)',
+                ease: "cubic-bezier(0.18, 0.89, 0.32, 1.28)",
+                onComplete: () => {
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                }
             });
             
-            const data = await response.json();
-            
-            // Remove loading indicator
-            loadingBubble.remove();
-            
-            // Add AI response
-            addMessage(data.response, 'received');
-        } catch (error) {
-            loadingBubble.remove();
-            addMessage('Error connecting to assistant', 'received');
+            chatMessages.scrollTop = chatMessages.scrollHeight;
         }
         
-        chatForm.reset();
-    });
-    
-    function addMessage(text, type, isLoading = false) {
-        const bubble = document.createElement('div');
-        bubble.className = `chat-bubble ${type} animate-fade-in`;
-        bubble.innerHTML = `
-            <div class="avatar">
-                ${type === 'sent' ? 
-                  '<i class="fas fa-user text-blue-500"></i>' : 
-                  '<i class="fas fa-robot text-indigo-500"></i>'}
-            </div>
-            <div class="message">${text}</div>
-        `;
-        chatHistory.appendChild(bubble);
-        chatHistory.scrollTop = chatHistory.scrollHeight;
-        return isLoading ? bubble : null;
-    }
-</script>
-<script>
-  // Hero animation
-  gsap.from('.hero-content', {
-    duration: 1,
-    y: 50,
-    opacity: 0,
-    stagger: 0.3
-  });
-</script>
+        // Function to show typing indicator
+        function showTypingIndicator() {
+            const typingDiv = document.createElement('div');
+            typingDiv.className = 'typing-indicator';
+            typingDiv.innerHTML = `
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+                <div class="typing-dot"></div>
+            `;
+            
+            typingDiv.style.opacity = '0';
+            chatMessages.appendChild(typingDiv);
+            
+            gsap.to(typingDiv, {
+                duration: 0.3,
+                opacity: 1,
+                onComplete: () => {
+                    chatMessages.scrollTop = chatMessages.scrollHeight;
+                }
+            });
+            
+            return typingDiv;
+        }
+        
+        // Function to simulate AI response
+        function simulateAIResponse(userMessage) {
+            // Show typing indicator
+            const typingIndicator = showTypingIndicator();
+            
+            // Simulate thinking time
+            setTimeout(() => {
+                // Remove typing indicator
+                typingIndicator.remove();
+                
+                // Generate AI response based on user input
+                let response = "";
+                
+                if (userMessage.toLowerCase().includes("workout") || userMessage.toLowerCase().includes("exercise")) {
+                    response = "For an effective workout, I recommend focusing on compound exercises that target multiple muscle groups. A good routine would include:<br><br>" +
+                    "<strong>1. Squats:</strong> 3 sets of 10 reps<br>" +
+                    "<strong>2. Push-ups:</strong> 3 sets to failure<br>" +
+                    "<strong>3. Bent-over Rows:</strong> 3 sets of 12 reps<br>" +
+                    "<strong>4. Plank:</strong> 3 sets of 30 seconds<br><br>" +
+                    "Remember to maintain proper form and increase intensity gradually!";
+                }
+                else if (userMessage.toLowerCase().includes("nutrition") || userMessage.toLowerCase().includes("diet")) {
+                    response = "Nutrition is crucial for fitness success! Here are my top tips:<br><br>" +
+                    "• Prioritize protein: Aim for 1.6-2.2g per kg of body weight daily<br>" +
+                    "• Stay hydrated: Drink at least 3 liters of water daily<br>" +
+                    "• Eat whole foods: Focus on vegetables, lean proteins, and complex carbs<br>" +
+                    "• Time your meals: Have protein and carbs within 30 mins after workouts<br><br>" +
+                    "Would you like a personalized meal plan?";
+                }
+                else if (userMessage.toLowerCase().includes("cardio")) {
+                    response = "Cardio is excellent for heart health and fat loss! Try these options:<br><br>" +
+                    "<strong>1. HIIT Training:</strong> 20-30s sprints followed by 60s rest, repeat 8 times<br>" +
+                    "<strong>2. Steady State:</strong> 30-45 minutes at moderate intensity<br>" +
+                    "<strong>3. Stair Climber:</strong> 20 minutes with varying resistance<br><br>" +
+                    "Aim for 150 minutes of moderate cardio or 75 minutes of intense cardio weekly.";
+                }
+                else {
+                    response = "That's a great question! As your AI fitness assistant, I recommend focusing on consistency in your workouts and nutrition. Remember that fitness is a journey, not a destination. Would you like me to suggest a personalized workout plan based on your goals?";
+                }
+                
+                // Add AI response
+                addMessage("FitAI Assistant", response, false);
+            }, 2000);
+        }
+        
+        // Handle message sending
+        sendButton.addEventListener('click', () => {
+            const message = userInput.value.trim();
+            if (message) {
+                // Add user message
+                addMessage("You", message, true);
+                
+                // Clear input
+                userInput.value = '';
+                
+                // Simulate AI response
+                simulateAIResponse(message);
+            }
+        });
+        
+        // Handle Enter key press
+        userInput.addEventListener('keypress', (e) => {
+            if (e.key === 'Enter') {
+                sendButton.click();
+            }
+        });
+        
+        // Animate topic items on hover
+        const topicItems = document.querySelectorAll('.topic-item');
+        topicItems.forEach(item => {
+            item.addEventListener('mouseenter', () => {
+                gsap.to(item, {
+                    duration: 0.3,
+                    x: 10,
+                    ease: "power2.out"
+                });
+            });
+            
+            item.addEventListener('mouseleave', () => {
+                gsap.to(item, {
+                    duration: 0.3,
+                    x: 0,
+                    ease: "power2.out"
+                });
+            });
+            
+            // Add click handler to topic items
+            item.addEventListener('click', () => {
+                const topicText = item.querySelector('span').textContent;
+                addMessage("You", `Tell me about ${topicText}`, true);
+                simulateAIResponse(topicText);
+            });
+        });
+        
+        // Initial animation for existing messages
+        gsap.utils.toArray('.message').forEach((message, index) => {
+            gsap.from(message, {
+                delay: index * 0.2,
+                duration: 0.6,
+                opacity: 0,
+                y: 30,
+                ease: "back.out(1.7)"
+            });
+        });
+        
+        // Animate chat header
+        gsap.from('.chat-header', {
+            duration: 1,
+            y: -30,
+            opacity: 0,
+            delay: 0.3,
+            ease: "power3.out"
+        });
+        
+        // Animate chat wrapper
+        gsap.from('.chat-wrapper', {
+            duration: 1,
+            y: 50,
+            opacity: 0,
+            delay: 0.6,
+            ease: "power3.out"
+        });
+    </script>
+</body>
+</html>
