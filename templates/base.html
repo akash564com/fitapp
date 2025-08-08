@@ -1,0 +1,81 @@
+<!DOCTYPE html>
+<html lang="{{ session.lang or 'en' }}" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <title>FitAI - {{ title }}</title>
+    <!-- Tailwind CSS -->
+    <script src="https://cdn.tailwindcss.com"></script>
+    <!-- Font Awesome -->
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+</head>
+<body class="bg-gray-50 dark:bg-gray-900 text-gray-800 dark:text-gray-200">
+    <!-- Navbar -->
+    <nav class="bg-indigo-600 dark:bg-gray-800 py-4 px-6 flex justify-between items-center">
+        <div class="flex items-center space-x-4">
+            <button id="sidebarToggle" class="text-white">
+                <i class="fas fa-bars fa-lg"></i>
+            </button>
+            <span class="text-white text-xl font-bold">FitAI</span>
+        </div>
+        
+        <div class="flex items-center space-x-6">
+            <div class="language-switcher">
+                <button data-lang="en">EN</button>
+                <button data-lang="hi">HI</button>
+            </div>
+            {% if session.user %}
+            <div class="flex items-center">
+                <img src="{{ session.user.photo_url }}" class="w-10 h-10 rounded-full">
+                <span class="ml-2 text-white">{{ session.user.name }}</span>
+            </div>
+            {% endif %}
+        </div>
+    </nav>
+
+    <!-- Sidebar -->
+    <div id="sidebar" class="w-64 bg-white dark:bg-gray-800 h-full fixed left-0 top-0 transform -translate-x-full transition-transform z-50">
+        <!-- Navigation links -->
+        <a href="/dashboard" class="sidebar-link"><i class="fas fa-chart-line"></i> Dashboard</a>
+        <a href="/workout" class="sidebar-link"><i class="fas fa-dumbbell"></i> Workout Generator</a>
+        <a href="/meal" class="sidebar-link"><i class="fas fa-utensils"></i> Meal Planner</a>
+        <a href="/chatbot" class="sidebar-link"><i class="fas fa-robot"></i> Fitness Assistant</a>
+        <a href="/logout" class="sidebar-link"><i class="fas fa-sign-out-alt"></i> Logout</a>
+    </div>
+
+    <!-- Main Content -->
+    <main class="ml-0 transition-all duration-300 p-6" id="mainContent">
+        {% block content %}{% endblock %}
+    </main>
+
+    <script>
+        // Dark mode toggle
+        const darkModeToggle = document.getElementById('darkModeToggle');
+        darkModeToggle.addEventListener('click', () => {
+            document.documentElement.classList.toggle('dark');
+            localStorage.setItem('darkMode', document.documentElement.classList.contains('dark'));
+        });
+
+        // Sidebar animation
+        const sidebar = document.getElementById('sidebar');
+        const sidebarToggle = document.getElementById('sidebarToggle');
+        const mainContent = document.getElementById('mainContent');
+        
+        sidebarToggle.addEventListener('click', () => {
+            sidebar.classList.toggle('-translate-x-full');
+            mainContent.classList.toggle('ml-64');
+        });
+
+        // Language switching
+        document.querySelectorAll('.language-switcher button').forEach(button => {
+            button.addEventListener('click', () => {
+                const lang = button.dataset.lang;
+                fetch('/set_language', {
+                    method: 'POST',
+                    body: JSON.stringify({ language: lang }),
+                    headers: { 'Content-Type': 'application/json' }
+                }).then(() => window.location.reload());
+            });
+        });
+    </script>
+</body>
+</html>
