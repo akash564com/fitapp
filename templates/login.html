@@ -1,51 +1,556 @@
-<div class="firebase-auth-container" id="firebase-auth-container"></div>
-<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-app-compat.js"></script>
-<script src="https://www.gstatic.com/firebasejs/9.0.0/firebase-auth-compat.js"></script>
-<script>
-  const firebaseConfig = {
-    apiKey: "YOUR_API_KEY",
-    authDomain: "your-project.firebaseapp.com",
-    projectId: "your-project"
-  };
-  
-  firebase.initializeApp(firebaseConfig);
-  const auth = firebase.auth();
-  
-  // Google Auth
-  const googleProvider = new firebase.auth.GoogleAuthProvider();
-  document.getElementById('google-login').addEventListener('click', () => {
-    auth.signInWithPopup(googleProvider).then((result) => {
-      const idToken = result.user.getIdToken();
-      // Send token to Flask backend
-      fetch('/login', {
-        method: 'POST',
-        body: JSON.stringify({ id_token: idToken }),
-        headers: { 'Content-Type': 'application/json' }
-      });
-    });
-  });
-  
-  // Email Auth
-  document.getElementById('email-login').addEventListener('submit', (e) => {
-    e.preventDefault();
-    const email = e.target.email.value;
-    const password = e.target.password.value;
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitAI - Login to Your Account</title>
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Animation Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/ScrollTrigger.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #10b981;
+            --dark: #0f172a;
+            --light: #f8fafc;
+            --gray: #94a3b8;
+            --card-bg: rgba(15, 23, 42, 0.7);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f172a, #1e293b);
+            color: var(--light);
+            min-height: 100vh;
+            overflow-x: hidden;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+        }
+
+        .hero-pattern {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.15) 0%, transparent 20%),
+                radial-gradient(circle at 80% 80%, rgba(16, 185, 129, 0.15) 0%, transparent 20%);
+            z-index: -1;
+        }
+
+        .gradient-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at center, rgba(15, 23, 42, 0) 0%, rgba(15, 23, 42, 1) 70%);
+            z-index: -1;
+        }
+
+        .login-container {
+            display: flex;
+            width: 100%;
+            max-width: 1200px;
+            min-height: 700px;
+            background: rgba(15, 23, 42, 0.5);
+            backdrop-filter: blur(10px);
+            border-radius: 30px;
+            overflow: hidden;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            margin: 2rem;
+        }
+
+        .login-left {
+            flex: 1;
+            background: linear-gradient(135deg, var(--primary), var(--primary-dark));
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            align-items: center;
+            padding: 3rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .login-left::before {
+            content: '';
+            position: absolute;
+            width: 200%;
+            height: 200%;
+            background: radial-gradient(circle, rgba(255,255,255,0.1) 0%, transparent 70%);
+            animation: rotate 15s linear infinite;
+        }
+
+        .login-left-content {
+            position: relative;
+            z-index: 2;
+            text-align: center;
+            max-width: 500px;
+        }
+
+        .login-left h2 {
+            font-size: 2.8rem;
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+        }
+
+        .login-left p {
+            font-size: 1.1rem;
+            color: rgba(255, 255, 255, 0.9);
+            margin-bottom: 2.5rem;
+            line-height: 1.7;
+        }
+
+        .login-right {
+            flex: 1;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+            padding: 4rem;
+            background: rgba(15, 23, 42, 0.8);
+        }
+
+        .login-header {
+            text-align: center;
+            margin-bottom: 3rem;
+        }
+
+        .login-header h1 {
+            font-size: 2.5rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .login-header p {
+            color: var(--gray);
+        }
+
+        .login-form {
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .form-group {
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+            color: var(--gray);
+        }
+
+        .form-group input {
+            width: 100%;
+            padding: 1rem 1.5rem;
+            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus {
+            outline: none;
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.1);
+            box-shadow: 0 0 0 3px rgba(99, 102, 241, 0.3);
+        }
+
+        .form-group i {
+            position: absolute;
+            right: 20px;
+            top: 50%;
+            transform: translateY(-50%);
+            color: var(--gray);
+        }
+
+        .remember-forgot {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin: 0.5rem 0 1rem;
+        }
+
+        .remember {
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .remember input {
+            accent-color: var(--primary);
+        }
+
+        .forgot-password {
+            color: var(--primary);
+            text-decoration: none;
+            transition: all 0.3s ease;
+        }
+
+        .forgot-password:hover {
+            text-decoration: underline;
+        }
+
+        .btn {
+            padding: 1rem;
+            border-radius: 15px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            outline: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.8rem;
+            font-size: 1.1rem;
+        }
+
+        .btn-login {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-login:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+        }
+
+        .divider {
+            display: flex;
+            align-items: center;
+            margin: 1.5rem 0;
+        }
+
+        .divider::before,
+        .divider::after {
+            content: '';
+            flex: 1;
+            height: 1px;
+            background: rgba(255, 255, 255, 0.1);
+        }
+
+        .divider span {
+            padding: 0 1rem;
+            color: var(--gray);
+        }
+
+        .btn-google {
+            background: white;
+            color: #4285F4;
+            font-weight: 600;
+        }
+
+        .btn-google:hover {
+            background: #f1f1f1;
+            transform: translateY(-2px);
+            box-shadow: 0 4px 10px rgba(0, 0, 0, 0.1);
+        }
+
+        .signup-link {
+            text-align: center;
+            margin-top: 1.5rem;
+            color: var(--gray);
+        }
+
+        .signup-link a {
+            color: var(--primary);
+            text-decoration: none;
+            font-weight: 500;
+            margin-left: 0.5rem;
+            transition: all 0.3s ease;
+        }
+
+        .signup-link a:hover {
+            text-decoration: underline;
+        }
+
+        .floating {
+            animation: floating 8s ease-in-out infinite;
+        }
+
+        @keyframes floating {
+            0% { transform: translateY(0px); }
+            50% { transform: translateY(-20px); }
+            100% { transform: translateY(0px); }
+        }
+
+        @keyframes rotate {
+            0% { transform: rotate(0deg); }
+            100% { transform: rotate(360deg); }
+        }
+
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .login-container {
+                flex-direction: column;
+                min-height: auto;
+            }
+            
+            .login-left {
+                padding: 2rem;
+            }
+            
+            .login-right {
+                padding: 2rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .login-container {
+                margin: 1rem;
+            }
+            
+            .login-left h2 {
+                font-size: 2.2rem;
+            }
+            
+            .login-header h1 {
+                font-size: 2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Elements -->
+    <div class="hero-pattern"></div>
+    <div class="gradient-overlay"></div>
     
-    auth.signInWithEmailAndPassword(email, password)
-      .then((userCredential) => {
-        // Handle successful login
-      })
-      .catch((error) => {
-        flashError(error.message);
-      });
-  });
-</script>
-<script>
-  // Hero animation
-  gsap.from('.hero-content', {
-    duration: 1,
-    y: 50,
-    opacity: 0,
-    stagger: 0.3
-  });
-</script>
+    <!-- Login Container -->
+    <div class="login-container">
+        <!-- Left Side - Visual Area -->
+        <div class="login-left">
+            <div class="login-left-content">
+                <lottie-player 
+                    src="https://assets10.lottiefiles.com/packages/lf20_jcikwtux.json" 
+                    background="transparent" 
+                    speed="1" 
+                    style="width: 100%; height: 300px; margin-bottom: 2rem;" 
+                    class="floating"
+                    loop autoplay>
+                </lottie-player>
+                <h2>Welcome Back to FitAI</h2>
+                <p>Continue your fitness journey with personalized workouts, nutrition plans, and AI-powered guidance tailored just for you.</p>
+                <div style="display: flex; gap: 1rem; justify-content: center; margin-top: 2rem;">
+                    <div style="width: 15px; height: 15px; background: var(--primary); border-radius: 50%;"></div>
+                    <div style="width: 15px; height: 15px; background: rgba(255,255,255,0.3); border-radius: 50%;"></div>
+                    <div style="width: 15px; height: 15px; background: rgba(255,255,255,0.3); border-radius: 50%;"></div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Right Side - Login Form -->
+        <div class="login-right">
+            <div class="login-header">
+                <h1>Login to Your Account</h1>
+                <p>Access your personalized fitness dashboard</p>
+            </div>
+            
+            <form class="login-form">
+                <div class="form-group">
+                    <label for="email">Email Address</label>
+                    <input type="email" id="email" placeholder="Enter your email" required>
+                    <i class="fas fa-envelope"></i>
+                </div>
+                
+                <div class="form-group">
+                    <label for="password">Password</label>
+                    <input type="password" id="password" placeholder="Enter your password" required>
+                    <i class="fas fa-lock"></i>
+                </div>
+                
+                <div class="remember-forgot">
+                    <div class="remember">
+                        <input type="checkbox" id="remember">
+                        <label for="remember">Remember me</label>
+                    </div>
+                    <a href="#" class="forgot-password">Forgot password?</a>
+                </div>
+                
+                <button type="submit" class="btn btn-login">
+                    <i class="fas fa-sign-in-alt"></i> Login
+                </button>
+                
+                <div class="divider">
+                    <span>Or continue with</span>
+                </div>
+                
+                <button type="button" class="btn btn-google">
+                    <i class="fab fa-google"></i> Sign in with Google
+                </button>
+            </form>
+            
+            <div class="signup-link">
+                Don't have an account? <a href="/signup.html">Sign up now</a>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Initialize GSAP animations
+        gsap.registerPlugin(ScrollTrigger);
+        
+        // Floating animation for the login container
+        gsap.to('.login-container', {
+            y: -10,
+            duration: 2,
+            repeat: -1,
+            yoyo: true,
+            ease: "power1.inOut"
+        });
+        
+        // Input field animations
+        const inputs = document.querySelectorAll('input');
+        inputs.forEach(input => {
+            input.addEventListener('focus', () => {
+                gsap.to(input, {
+                    duration: 0.3,
+                    boxShadow: '0 0 0 3px rgba(99, 102, 241, 0.3)',
+                    ease: "power2.out"
+                });
+            });
+            
+            input.addEventListener('blur', () => {
+                gsap.to(input, {
+                    duration: 0.3,
+                    boxShadow: 'none',
+                    ease: "power2.out"
+                });
+            });
+        });
+        
+        // Button hover animations
+        const buttons = document.querySelectorAll('.btn');
+        buttons.forEach(button => {
+            button.addEventListener('mouseenter', () => {
+                gsap.to(button, {
+                    duration: 0.3,
+                    scale: 1.03,
+                    ease: "power2.out"
+                });
+            });
+            
+            button.addEventListener('mouseleave', () => {
+                gsap.to(button, {
+                    duration: 0.3,
+                    scale: 1,
+                    ease: "power2.out"
+                });
+            });
+        });
+        
+        // Form submission
+        const loginForm = document.querySelector('.login-form');
+        loginForm.addEventListener('submit', (e) => {
+            e.preventDefault();
+            
+            // Show loading state
+            const loginBtn = document.querySelector('.btn-login');
+            const originalText = loginBtn.innerHTML;
+            loginBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Logging in...';
+            loginBtn.disabled = true;
+            
+            // Simulate login process
+            setTimeout(() => {
+                // Reset button
+                loginBtn.innerHTML = originalText;
+                loginBtn.disabled = false;
+                
+                // Show success animation
+                const successIcon = document.createElement('div');
+                successIcon.innerHTML = '<i class="fas fa-check-circle" style="font-size: 4rem; color: var(--secondary);"></i>';
+                successIcon.style.position = 'fixed';
+                successIcon.style.top = '50%';
+                successIcon.style.left = '50%';
+                successIcon.style.transform = 'translate(-50%, -50%)';
+                successIcon.style.opacity = '0';
+                successIcon.style.zIndex = '1000';
+                document.body.appendChild(successIcon);
+                
+                gsap.to(successIcon, {
+                    duration: 0.5,
+                    opacity: 1,
+                    scale: 1.2,
+                    ease: "power2.out",
+                    onComplete: () => {
+                        setTimeout(() => {
+                            gsap.to(successIcon, {
+                                duration: 0.3,
+                                opacity: 0,
+                                scale: 0.8,
+                                ease: "power2.in",
+                                onComplete: () => {
+                                    document.body.removeChild(successIcon);
+                                    // Redirect to dashboard
+                                    window.location.href = '/dashboard.html';
+                                }
+                            });
+                        }, 1000);
+                    }
+                });
+            }, 2000);
+        });
+        
+        // Google login button
+        const googleBtn = document.querySelector('.btn-google');
+        googleBtn.addEventListener('click', () => {
+            // Show Google login animation
+            const googleIcon = document.createElement('div');
+            googleIcon.innerHTML = '<i class="fab fa-google" style="font-size: 4rem; color: #4285F4;"></i>';
+            googleIcon.style.position = 'fixed';
+            googleIcon.style.top = '50%';
+            googleIcon.style.left = '50%';
+            googleIcon.style.transform = 'translate(-50%, -50%)';
+            googleIcon.style.opacity = '0';
+            googleIcon.style.zIndex = '1000';
+            document.body.appendChild(googleIcon);
+            
+            gsap.to(googleIcon, {
+                duration: 0.5,
+                opacity: 1,
+                scale: 1.2,
+                ease: "power2.out",
+                onComplete: () => {
+                    setTimeout(() => {
+                        gsap.to(googleIcon, {
+                            duration: 0.3,
+                            opacity: 0,
+                            scale: 0.8,
+                            ease: "power2.in",
+                            onComplete: () => {
+                                document.body.removeChild(googleIcon);
+                                // Simulate redirect to dashboard
+                                window.location.href = '/dashboard.html';
+                            }
+                        });
+                    }, 1000);
+                }
+            });
+        });
+    </script>
+</body>
+</html>
