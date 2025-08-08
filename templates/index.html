@@ -1,0 +1,1269 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitAI - Your Personal Fitness Assistant</title>
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Animation Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/ScrollTrigger.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #10b981;
+            --dark: #0f172a;
+            --light: #f8fafc;
+            --gray: #94a3b8;
+            --card-bg: rgba(15, 23, 42, 0.7);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f172a, #1e293b);
+            color: var(--light);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .hero-pattern {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.15) 0%, transparent 20%),
+                radial-gradient(circle at 80% 80%, rgba(16, 185, 129, 0.15) 0%, transparent 20%);
+            z-index: -1;
+        }
+
+        .gradient-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at center, rgba(15, 23, 42, 0) 0%, rgba(15, 23, 42, 1) 70%);
+            z-index: -1;
+        }
+
+        /* Navigation */
+        nav {
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+            padding: 1rem 2rem;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 100;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+        }
+
+        .logo i {
+            color: var(--primary);
+            font-size: 1.8rem;
+        }
+
+        .nav-links {
+            display: flex;
+            gap: 2rem;
+            align-items: center;
+        }
+
+        .nav-links a {
+            color: var(--gray);
+            text-decoration: none;
+            font-weight: 500;
+            transition: all 0.3s ease;
+            position: relative;
+        }
+
+        .nav-links a:hover {
+            color: white;
+        }
+
+        .nav-links a.active {
+            color: white;
+        }
+
+        .nav-links a.active::after {
+            content: '';
+            position: absolute;
+            bottom: -5px;
+            left: 0;
+            width: 100%;
+            height: 2px;
+            background: var(--primary);
+            border-radius: 10px;
+        }
+
+        .auth-buttons {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .btn {
+            padding: 0.6rem 1.5rem;
+            border-radius: 50px;
+            font-weight: 500;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            outline: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.5rem;
+        }
+
+        .btn-primary {
+            background: var(--primary);
+            color: white;
+            box-shadow: 0 4px 15px rgba(99, 102, 241, 0.3);
+        }
+
+        .btn-primary:hover {
+            background: var(--primary-dark);
+            transform: translateY(-2px);
+            box-shadow: 0 6px 20px rgba(99, 102, 241, 0.4);
+        }
+
+        .btn-outline {
+            background: transparent;
+            color: var(--primary);
+            border: 1px solid var(--primary);
+        }
+
+        .btn-outline:hover {
+            background: rgba(99, 102, 241, 0.1);
+            transform: translateY(-2px);
+        }
+
+        /* Page container */
+        .page-container {
+            min-height: 100vh;
+            padding-top: 80px;
+            display: none;
+            opacity: 0;
+            transform: translateY(20px);
+            transition: opacity 0.5s ease, transform 0.5s ease;
+        }
+
+        .page-container.active {
+            display: block;
+            opacity: 1;
+            transform: translateY(0);
+        }
+
+        /* Hero Section */
+        .hero {
+            min-height: 100vh;
+            display: flex;
+            align-items: center;
+            padding: 0 2rem;
+            position: relative;
+            overflow: hidden;
+        }
+
+        .hero-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: 1fr 1fr;
+            gap: 4rem;
+            align-items: center;
+        }
+
+        .hero-text h1 {
+            font-size: 3.5rem;
+            line-height: 1.2;
+            margin-bottom: 1.5rem;
+            font-weight: 700;
+        }
+
+        .hero-text h1 span {
+            color: var(--primary);
+            position: relative;
+        }
+
+        .hero-text h1 span::after {
+            content: '';
+            position: absolute;
+            bottom: 5px;
+            left: 0;
+            width: 100%;
+            height: 12px;
+            background: rgba(99, 102, 241, 0.3);
+            z-index: -1;
+            border-radius: 4px;
+        }
+
+        .hero-text p {
+            font-size: 1.2rem;
+            color: var(--gray);
+            margin-bottom: 2rem;
+            line-height: 1.7;
+        }
+
+        .hero-buttons {
+            display: flex;
+            gap: 1.5rem;
+            margin-top: 2rem;
+        }
+
+        .hero-image {
+            position: relative;
+            display: flex;
+            justify-content: center;
+            align-items: center;
+        }
+
+        .hero-blob {
+            position: absolute;
+            width: 500px;
+            height: 500px;
+            background: radial-gradient(circle, var(--primary) 0%, transparent 70%);
+            border-radius: 50%;
+            filter: blur(80px);
+            opacity: 0.2;
+            z-index: -1;
+            animation: pulse 8s infinite ease-in-out;
+        }
+
+        .hero-image img {
+            max-width: 100%;
+            border-radius: 20px;
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            transform: perspective(1000px) rotateY(5deg);
+            transition: all 0.5s ease;
+        }
+
+        .hero-image img:hover {
+            transform: perspective(1000px) rotateY(0deg);
+        }
+
+        @keyframes pulse {
+            0% { transform: scale(0.95); opacity: 0.2; }
+            50% { transform: scale(1); opacity: 0.3; }
+            100% { transform: scale(0.95); opacity: 0.2; }
+        }
+
+        /* Features Section */
+        .features {
+            padding: 8rem 2rem;
+            position: relative;
+        }
+
+        .section-header {
+            text-align: center;
+            max-width: 800px;
+            margin: 0 auto 5rem;
+        }
+
+        .section-header h2 {
+            font-size: 2.5rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+            display: inline-block;
+        }
+
+        .section-header h2::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 80px;
+            height: 4px;
+            background: var(--primary);
+            border-radius: 10px;
+        }
+
+        .section-header p {
+            font-size: 1.1rem;
+            color: var(--gray);
+            line-height: 1.7;
+        }
+
+        .features-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .feature-card {
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 2.5rem 2rem;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+            position: relative;
+            overflow: hidden;
+        }
+
+        .feature-card:hover {
+            transform: translateY(-10px);
+            box-shadow: 0 20px 25px -5px rgba(0, 0, 0, 0.1), 0 10px 10px -5px rgba(0, 0, 0, 0.04);
+            border-color: rgba(99, 102, 241, 0.3);
+        }
+
+        .feature-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: var(--primary);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.5s ease;
+        }
+
+        .feature-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .feature-icon {
+            width: 70px;
+            height: 70px;
+            background: rgba(99, 102, 241, 0.1);
+            border-radius: 18px;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            margin-bottom: 1.5rem;
+            font-size: 1.8rem;
+            color: var(--primary);
+        }
+
+        .feature-card h3 {
+            font-size: 1.5rem;
+            margin-bottom: 1rem;
+        }
+
+        .feature-card p {
+            color: var(--gray);
+            line-height: 1.7;
+        }
+
+        /* Chatbot Section */
+        .chatbot-section {
+            padding: 8rem 2rem;
+            position: relative;
+        }
+
+        .chat-container {
+            max-width: 1000px;
+            margin: 0 auto;
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+
+        .chat-header {
+            background: rgba(99, 102, 241, 0.1);
+            padding: 1.5rem 2rem;
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+        }
+
+        .chat-header i {
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+
+        .chat-header h2 {
+            font-size: 1.5rem;
+        }
+
+        .chat-history {
+            height: 400px;
+            padding: 2rem;
+            overflow-y: auto;
+            display: flex;
+            flex-direction: column;
+            gap: 1.5rem;
+        }
+
+        .chat-message {
+            max-width: 80%;
+            padding: 1.2rem 1.5rem;
+            border-radius: 18px;
+            position: relative;
+            animation: fadeIn 0.3s ease;
+        }
+
+        @keyframes fadeIn {
+            from { opacity: 0; transform: translateY(10px); }
+            to { opacity: 1; transform: translateY(0); }
+        }
+
+        .user-message {
+            background: rgba(99, 102, 241, 0.2);
+            align-self: flex-end;
+            border-bottom-right-radius: 5px;
+        }
+
+        .bot-message {
+            background: rgba(15, 23, 42, 0.5);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            align-self: flex-start;
+            border-bottom-left-radius: 5px;
+        }
+
+        .chat-input {
+            padding: 1.5rem 2rem;
+            background: rgba(15, 23, 42, 0.7);
+            display: flex;
+            gap: 1rem;
+        }
+
+        .chat-input input {
+            flex: 1;
+            padding: 1rem 1.5rem;
+            border-radius: 50px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 1rem;
+            outline: none;
+            transition: all 0.3s ease;
+        }
+
+        .chat-input input:focus {
+            border-color: var(--primary);
+            background: rgba(99, 102, 241, 0.1);
+        }
+
+        .chat-input button {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: var(--primary);
+            color: white;
+            border: none;
+            cursor: pointer;
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            transition: all 0.3s ease;
+        }
+
+        .chat-input button:hover {
+            background: var(--primary-dark);
+            transform: rotate(10deg);
+        }
+
+        /* Workout Generator */
+        .workout-section {
+            padding: 6rem 2rem;
+            max-width: 1200px;
+            margin: 0 auto;
+        }
+
+        .form-container {
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 2.5rem;
+            backdrop-filter: blur(10px);
+            margin-bottom: 4rem;
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            margin-bottom: 1.5rem;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.5rem;
+            font-weight: 500;
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 0.8rem 1.2rem;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 1rem;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--primary);
+        }
+
+        .results-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+        }
+
+        .workout-card {
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 2rem;
+            transition: all 0.3s ease;
+            backdrop-filter: blur(10px);
+        }
+
+        .workout-card:hover {
+            transform: translateY(-5px);
+            box-shadow: 0 10px 15px -3px rgba(0, 0, 0, 0.1);
+            border-color: rgba(99, 102, 241, 0.3);
+        }
+
+        .workout-card h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1rem;
+            color: var(--primary);
+        }
+
+        .workout-card ul {
+            list-style-type: none;
+        }
+
+        .workout-card li {
+            padding: 0.5rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .workout-card li:last-child {
+            border-bottom: none;
+        }
+
+        /* Footer */
+        footer {
+            background: rgba(15, 23, 42, 0.8);
+            border-top: 1px solid rgba(255, 255, 255, 0.05);
+            padding: 4rem 2rem 2rem;
+            position: relative;
+        }
+
+        .footer-content {
+            max-width: 1200px;
+            margin: 0 auto;
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 3rem;
+        }
+
+        .footer-column h3 {
+            font-size: 1.3rem;
+            margin-bottom: 1.5rem;
+            position: relative;
+            display: inline-block;
+        }
+
+        .footer-column h3::after {
+            content: '';
+            position: absolute;
+            bottom: -8px;
+            left: 0;
+            width: 40px;
+            height: 3px;
+            background: var(--primary);
+        }
+
+        .footer-column p {
+            color: var(--gray);
+            line-height: 1.7;
+            margin-bottom: 1.5rem;
+        }
+
+        .footer-links {
+            display: flex;
+            flex-direction: column;
+            gap: 0.8rem;
+        }
+
+        .footer-links a {
+            color: var(--gray);
+            text-decoration: none;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .footer-links a:hover {
+            color: white;
+            transform: translateX(5px);
+        }
+
+        .footer-links a i {
+            color: var(--primary);
+            font-size: 0.9rem;
+        }
+
+        .social-links {
+            display: flex;
+            gap: 1rem;
+            margin-top: 1.5rem;
+        }
+
+        .social-links a {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray);
+            transition: all 0.3s ease;
+        }
+
+        .social-links a:hover {
+            background: var(--primary);
+            color: white;
+            transform: translateY(-5px);
+        }
+
+        .copyright {
+            text-align: center;
+            padding-top: 3rem;
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        /* Responsive Design */
+        @media (max-width: 992px) {
+            .hero-content {
+                grid-template-columns: 1fr;
+                gap: 3rem;
+                text-align: center;
+            }
+            
+            .hero-text h1 {
+                font-size: 2.8rem;
+            }
+            
+            .hero-buttons {
+                justify-content: center;
+            }
+            
+            .hero-image {
+                order: -1;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .nav-links {
+                display: none;
+            }
+            
+            .hero-text h1 {
+                font-size: 2.3rem;
+            }
+            
+            .section-header h2 {
+                font-size: 2rem;
+            }
+            
+            .hero-buttons {
+                flex-direction: column;
+                align-items: center;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Elements -->
+    <div class="hero-pattern"></div>
+    <div class="gradient-overlay"></div>
+    
+    <!-- Navigation -->
+    <nav>
+        <div class="logo">
+            <i class="fas fa-dumbbell"></i>
+            <span>FitAI</span>
+        </div>
+        
+        <div class="nav-links">
+            <a href="#" class="nav-link active" data-page="home">Home</a>
+            <a href="#" class="nav-link" data-page="features">Features</a>
+            <a href="#" class="nav-link" data-page="workout">Workouts</a>
+            <a href="#" class="nav-link" data-page="chatbot">Assistant</a>
+            <a href="#" class="nav-link" data-page="dashboard">Dashboard</a>
+        </div>
+        
+        <div class="auth-buttons">
+            <button class="btn btn-outline">Login</button>
+            <button class="btn btn-primary">Sign Up</button>
+        </div>
+    </nav>
+    
+    <!-- Page Containers -->
+    <div id="home-page" class="page-container active">
+        <!-- Hero Section -->
+        <section class="hero">
+            <div class="hero-content">
+                <div class="hero-text">
+                    <h1>Transform Your <span>Fitness Journey</span> with AI</h1>
+                    <p>FitAI combines artificial intelligence with expert fitness knowledge to create personalized workout plans, nutrition guides, and 24/7 coaching tailored just for you.</p>
+                    
+                    <div class="hero-buttons">
+                        <button class="btn btn-primary" data-page="workout">
+                            <i class="fas fa-dumbbell"></i> Generate Workout
+                        </button>
+                        <button class="btn btn-outline" data-page="chatbot">
+                            <i class="fas fa-robot"></i> Talk to Assistant
+                        </button>
+                    </div>
+                </div>
+                
+                <div class="hero-image">
+                    <div class="hero-blob"></div>
+                    <lottie-player 
+                        src="https://assets8.lottiefiles.com/packages/lf20_obhph3sh.json" 
+                        background="transparent" 
+                        speed="1" 
+                        style="width: 100%; height: auto" 
+                        loop autoplay>
+                    </lottie-player>
+                </div>
+            </div>
+        </section>
+        
+        <!-- Features Section -->
+        <section class="features">
+            <div class="section-header">
+                <h2>Powerful Features</h2>
+                <p>Discover how FitAI revolutionizes your fitness experience with cutting-edge technology and personalized guidance</p>
+            </div>
+            
+            <div class="features-grid">
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-robot"></i>
+                    </div>
+                    <h3>AI Personal Trainer</h3>
+                    <p>Get personalized workout recommendations based on your goals, fitness level, and available equipment.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-utensils"></i>
+                    </div>
+                    <h3>Smart Meal Plans</h3>
+                    <p>Custom nutrition plans tailored to your dietary preferences, allergies, and fitness objectives.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-comments"></i>
+                    </div>
+                    <h3>24/7 Chat Support</h3>
+                    <p>Ask fitness questions anytime and get instant answers from our AI-powered assistant.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-chart-line"></i>
+                    </div>
+                    <h3>Progress Dashboard</h3>
+                    <p>Track your workouts, nutrition, and progress with beautiful charts and insights.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-globe"></i>
+                    </div>
+                    <h3>Multilingual Support</h3>
+                    <p>Use the app in your preferred language with seamless switching between English and Hindi.</p>
+                </div>
+                
+                <div class="feature-card">
+                    <div class="feature-icon">
+                        <i class="fas fa-mobile-alt"></i>
+                    </div>
+                    <h3>Mobile Friendly</h3>
+                    <p>Access your fitness plan anywhere with our responsive mobile experience.</p>
+                </div>
+            </div>
+        </section>
+    </div>
+    
+    <div id="workout-page" class="page-container">
+        <section class="workout-section">
+            <div class="section-header">
+                <h2>Personalized Workout Generator</h2>
+                <p>Create your custom workout plan based on your goals and preferences</p>
+            </div>
+            
+            <div class="form-container">
+                <div class="form-grid">
+                    <div class="form-group">
+                        <label>Fitness Goal</label>
+                        <select>
+                            <option>Build Muscle</option>
+                            <option>Lose Weight</option>
+                            <option>Increase Endurance</option>
+                            <option>Improve Flexibility</option>
+                            <option>General Fitness</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Experience Level</label>
+                        <select>
+                            <option>Beginner</option>
+                            <option>Intermediate</option>
+                            <option>Advanced</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Workout Duration</label>
+                        <select>
+                            <option>30 minutes</option>
+                            <option>45 minutes</option>
+                            <option>60 minutes</option>
+                            <option>90 minutes</option>
+                        </select>
+                    </div>
+                    
+                    <div class="form-group">
+                        <label>Available Equipment</label>
+                        <select>
+                            <option>Full Gym</option>
+                            <option>Dumbbells Only</option>
+                            <option>Resistance Bands</option>
+                            <option>Bodyweight Only</option>
+                        </select>
+                    </div>
+                </div>
+                
+                <button class="btn btn-primary">
+                    <i class="fas fa-bolt"></i> Generate Workout Plan
+                </button>
+            </div>
+            
+            <div class="section-header">
+                <h2>Your Custom Workout Plan</h2>
+                <p>Designed specifically for your goals and fitness level</p>
+            </div>
+            
+            <div class="results-grid">
+                <div class="workout-card">
+                    <h3>Day 1: Upper Body</h3>
+                    <ul>
+                        <li>Bench Press <span>3x12</span></li>
+                        <li>Bent Over Rows <span>3x10</span></li>
+                        <li>Shoulder Press <span>3x10</span></li>
+                        <li>Bicep Curls <span>3x15</span></li>
+                        <li>Tricep Extensions <span>3x15</span></li>
+                    </ul>
+                </div>
+                
+                <div class="workout-card">
+                    <h3>Day 2: Lower Body</h3>
+                    <ul>
+                        <li>Squats <span>4x10</span></li>
+                        <li>Deadlifts <span>3x8</span></li>
+                        <li>Lunges <span>3x12 each leg</span></li>
+                        <li>Leg Press <span>3x15</span></li>
+                        <li>Calf Raises <span>4x20</span></li>
+                    </ul>
+                </div>
+                
+                <div class="workout-card">
+                    <h3>Day 3: Cardio & Core</h3>
+                    <ul>
+                        <li>Running <span>30 mins</span></li>
+                        <li>Plank <span>3x60 sec</span></li>
+                        <li>Russian Twists <span>3x20</span></li>
+                        <li>Leg Raises <span>3x15</span></li>
+                        <li>Mountain Climbers <span>3x30</span></li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </div>
+    
+    <div id="chatbot-page" class="page-container">
+        <section class="chatbot-section">
+            <div class="section-header">
+                <h2>AI Fitness Assistant</h2>
+                <p>Get instant answers to your fitness and nutrition questions with our 24/7 AI assistant</p>
+            </div>
+            
+            <div class="chat-container">
+                <div class="chat-header">
+                    <i class="fas fa-robot"></i>
+                    <h2>FitAI Assistant</h2>
+                </div>
+                
+                <div class="chat-history">
+                    <div class="chat-message bot-message">
+                        Hello! I'm your FitAI assistant. How can I help you with your fitness journey today?
+                    </div>
+                    
+                    <div class="chat-message user-message">
+                        What's a good beginner workout for someone who wants to build muscle?
+                    </div>
+                    
+                    <div class="chat-message bot-message">
+                        Great question! Here's a simple beginner workout routine for muscle building:<br><br>
+                        1. Squats: 3 sets of 10 reps<br>
+                        2. Push-ups: 3 sets of 8-12 reps<br>
+                        3. Dumbbell Rows: 3 sets of 10 reps per arm<br>
+                        4. Plank: 3 sets of 30 seconds<br><br>
+                        Remember to rest 60-90 seconds between sets and focus on proper form!
+                    </div>
+                </div>
+                
+                <div class="chat-input">
+                    <input type="text" placeholder="Ask a fitness question...">
+                    <button>
+                        <i class="fas fa-paper-plane"></i>
+                    </button>
+                </div>
+            </div>
+        </section>
+    </div>
+    
+    <div id="dashboard-page" class="page-container">
+        <section class="workout-section">
+            <div class="section-header">
+                <h2>Your Fitness Dashboard</h2>
+                <p>Track your progress and stay motivated on your fitness journey</p>
+            </div>
+            
+            <div class="results-grid">
+                <div class="workout-card">
+                    <h3>Weekly Progress</h3>
+                    <lottie-player 
+                        src="https://assets1.lottiefiles.com/packages/lf20_0yfsb3a1.json" 
+                        background="transparent" 
+                        speed="1" 
+                        style="width: 100%; height: 200px" 
+                        loop autoplay>
+                    </lottie-player>
+                    <ul>
+                        <li>Workouts Completed <span>4/5</span></li>
+                        <li>Meals Logged <span>18/21</span></li>
+                        <li>Steps Taken <span>68,432</span></li>
+                        <li>Calories Burned <span>3,842</span></li>
+                    </ul>
+                </div>
+                
+                <div class="workout-card">
+                    <h3>Achievements</h3>
+                    <lottie-player 
+                        src="https://assets1.lottiefiles.com/packages/lf20_5tkzkblw.json" 
+                        background="transparent" 
+                        speed="1" 
+                        style="width: 100%; height: 200px" 
+                        loop autoplay>
+                    </lottie-player>
+                    <ul>
+                        <li>Current Streak <span>12 days</span></li>
+                        <li>Total Workouts <span>36</span></li>
+                        <li>Goals Achieved <span>8/12</span></li>
+                        <li>Consistency <span>85%</span></li>
+                    </ul>
+                </div>
+            </div>
+        </section>
+    </div>
+    
+    <!-- Footer -->
+    <footer>
+        <div class="footer-content">
+            <div class="footer-column">
+                <h3>FitAI</h3>
+                <p>Your personal AI fitness assistant that creates personalized workout and nutrition plans to help you achieve your health goals.</p>
+                <div class="social-links">
+                    <a href="#"><i class="fab fa-facebook-f"></i></a>
+                    <a href="#"><i class="fab fa-twitter"></i></a>
+                    <a href="#"><i class="fab fa-instagram"></i></a>
+                    <a href="#"><i class="fab fa-linkedin-in"></i></a>
+                </div>
+            </div>
+            
+            <div class="footer-column">
+                <h3>Features</h3>
+                <div class="footer-links">
+                    <a href="#" data-page="workout"><i class="fas fa-chevron-right"></i> AI Workout Generator</a>
+                    <a href="#" data-page="meal"><i class="fas fa-chevron-right"></i> Meal Plan Creator</a>
+                    <a href="#" data-page="chatbot"><i class="fas fa-chevron-right"></i> Fitness Assistant</a>
+                    <a href="#" data-page="dashboard"><i class="fas fa-chevron-right"></i> Progress Dashboard</a>
+                    <a href="#"><i class="fas fa-chevron-right"></i> Multilingual Support</a>
+                </div>
+            </div>
+            
+            <div class="footer-column">
+                <h3>Company</h3>
+                <div class="footer-links">
+                    <a href="#"><i class="fas fa-chevron-right"></i> About Us</a>
+                    <a href="#"><i class="fas fa-chevron-right"></i> Our Team</a>
+                    <a href="#"><i class="fas fa-chevron-right"></i> Careers</a>
+                    <a href="#"><i class="fas fa-chevron-right"></i> Contact</a>
+                    <a href="#"><i class="fas fa-chevron-right"></i> Blog</a>
+                </div>
+            </div>
+            
+            <div class="footer-column">
+                <h3>Support</h3>
+                <div class="footer-links">
+                    <a href="#"><i class="fas fa-chevron-right"></i> Help Center</a>
+                    <a href="#"><i class="fas fa-chevron-right"></i> FAQs</a>
+                    <a href="#"><i class="fas fa-chevron-right"></i> Privacy Policy</a>
+                    <a href="#"><i class="fas fa-chevron-right"></i> Terms of Service</a>
+                </div>
+            </div>
+        </div>
+        
+        <div class="copyright">
+            &copy; 2023 FitAI. All rights reserved.
+        </div>
+    </footer>
+    
+    <script>
+        // Initialize GSAP animations
+        gsap.registerPlugin(ScrollTrigger);
+        
+        // Page navigation system
+        const pages = {
+            'home': document.getElementById('home-page'),
+            'workout': document.getElementById('workout-page'),
+            'chatbot': document.getElementById('chatbot-page'),
+            'dashboard': document.getElementById('dashboard-page')
+        };
+        
+        function showPage(pageId) {
+            // Hide all pages
+            Object.values(pages).forEach(page => {
+                page.classList.remove('active');
+            });
+            
+            // Show selected page
+            pages[pageId].classList.add('active');
+            
+            // Update active nav link
+            document.querySelectorAll('.nav-link').forEach(link => {
+                link.classList.remove('active');
+            });
+            document.querySelector(`.nav-link[data-page="${pageId}"]`).classList.add('active');
+            
+            // Scroll to top
+            window.scrollTo(0, 0);
+        }
+        
+        // Set up event listeners for navigation
+        document.querySelectorAll('.nav-link, .footer-links a').forEach(link => {
+            link.addEventListener('click', function(e) {
+                e.preventDefault();
+                const pageId = this.getAttribute('data-page');
+                if (pageId) {
+                    showPage(pageId);
+                }
+            });
+        });
+        
+        // Set up event listeners for buttons
+        document.querySelectorAll('[data-page]').forEach(button => {
+            if (button.tagName === 'BUTTON') {
+                button.addEventListener('click', function() {
+                    const pageId = this.getAttribute('data-page');
+                    showPage(pageId);
+                });
+            }
+        });
+        
+        // Hero section animation
+        gsap.from('.hero-text', {
+            duration: 1,
+            y: 50,
+            opacity: 0,
+            delay: 0.3,
+            ease: 'power3.out'
+        });
+        
+        gsap.from('.hero-image', {
+            duration: 1,
+            y: 50,
+            opacity: 0,
+            delay: 0.6,
+            ease: 'power3.out'
+        });
+        
+        gsap.from('.hero-buttons', {
+            duration: 1,
+            y: 30,
+            opacity: 0,
+            delay: 1,
+            stagger: 0.2,
+            ease: 'power3.out'
+        });
+        
+        // Feature cards animation
+        gsap.from('.feature-card', {
+            scrollTrigger: {
+                trigger: '.features',
+                start: 'top 80%'
+            },
+            y: 50,
+            opacity: 0,
+            stagger: 0.2,
+            duration: 0.8,
+            ease: 'power3.out'
+        });
+        
+        // Chatbot section animation
+        gsap.from('.chat-container', {
+            scrollTrigger: {
+                trigger: '.chatbot-section',
+                start: 'top 80%'
+            },
+            y: 50,
+            opacity: 0,
+            duration: 1,
+            ease: 'power3.out'
+        });
+        
+        // Chat messages animation
+        document.querySelectorAll('.chat-message').forEach((msg, index) => {
+            gsap.from(msg, {
+                delay: index * 0.3,
+                opacity: 0,
+                y: 20,
+                duration: 0.5
+            });
+        });
+        
+        // Footer animation
+        gsap.from('.footer-column', {
+            scrollTrigger: {
+                trigger: 'footer',
+                start: 'top 90%'
+            },
+            y: 50,
+            opacity: 0,
+            stagger: 0.2,
+            duration: 0.8,
+            ease: 'power3.out'
+        });
+        
+        // Chat submit function
+        document.querySelector('.chat-input button').addEventListener('click', function() {
+            const input = document.querySelector('.chat-input input');
+            const message = input.value.trim();
+            
+            if (message) {
+                // Add user message
+                const userMsg = document.createElement('div');
+                userMsg.className = 'chat-message user-message';
+                userMsg.textContent = message;
+                document.querySelector('.chat-history').appendChild(userMsg);
+                
+                // Clear input
+                input.value = '';
+                
+                // Show thinking animation
+                const botThinking = document.createElement('div');
+                botThinking.className = 'chat-message bot-message';
+                botThinking.innerHTML = '<i class="fas fa-circle-notch fa-spin"></i> Thinking...';
+                document.querySelector('.chat-history').appendChild(botThinking);
+                
+                // Scroll to bottom
+                document.querySelector('.chat-history').scrollTop = document.querySelector('.chat-history').scrollHeight;
+                
+                // Simulate AI response
+                setTimeout(() => {
+                    // Remove thinking message
+                    botThinking.remove();
+                    
+                    // Add AI response
+                    const botMsg = document.createElement('div');
+                    botMsg.className = 'chat-message bot-message';
+                    botMsg.textContent = "I'm still learning, but I recommend focusing on compound exercises like squats and bench presses for overall muscle development. Remember to maintain proper form and gradually increase weight over time!";
+                    document.querySelector('.chat-history').appendChild(botMsg);
+                    
+                    // Animate new message
+                    gsap.from(botMsg, {
+                        opacity: 0,
+                        y: 20,
+                        duration: 0.5
+                    });
+                    
+                    // Scroll to bottom
+                    document.querySelector('.chat-history').scrollTop = document.querySelector('.chat-history').scrollHeight;
+                }, 2000);
+            }
+        });
+        
+        // Workout generator animation
+        gsap.from('.form-container', {
+            scrollTrigger: {
+                trigger: '.workout-section',
+                start: 'top 80%'
+            },
+            y: 50,
+            opacity: 0,
+            duration: 1,
+            ease: 'power3.out'
+        });
+        
+        gsap.from('.workout-card', {
+            scrollTrigger: {
+                trigger: '.workout-section',
+                start: 'top 60%'
+            },
+            y: 50,
+            opacity: 0,
+            stagger: 0.2,
+            duration: 0.8,
+            ease: 'power3.out'
+        });
+    </script>
+</body>
+</html>
