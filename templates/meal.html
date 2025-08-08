@@ -1,112 +1,1069 @@
-{% extends "base.html" %}
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitAI - Personalized Meal Planner</title>
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Animation Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #10b981;
+            --accent: #f59e0b;
+            --dark: #0f172a;
+            --light: #f8fafc;
+            --gray: #94a3b8;
+            --card-bg: rgba(15, 23, 42, 0.7);
+        }
 
-{% block content %}
-<div class="max-w-4xl mx-auto">
-    <h1 class="text-3xl font-bold text-center mb-8">Personalized Meal Plan</h1>
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f172a, #1e293b);
+            color: var(--light);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .hero-pattern {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.15) 0%, transparent 20%),
+                radial-gradient(circle at 80% 80%, rgba(16, 185, 129, 0.15) 0%, transparent 20%),
+                radial-gradient(circle at 30% 70%, rgba(245, 158, 11, 0.1) 0%, transparent 20%);
+            z-index: -1;
+        }
+
+        .gradient-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at center, rgba(15, 23, 42, 0) 0%, rgba(15, 23, 42, 1) 70%);
+            z-index: -1;
+        }
+
+        /* Top Navigation */
+        .top-nav {
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 90;
+            height: 70px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+        }
+
+        .logo i {
+            color: var(--primary);
+            font-size: 1.8rem;
+        }
+
+        .nav-controls {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            background: rgba(99, 102, 241, 0.1);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .user-profile:hover {
+            background: rgba(99, 102, 241, 0.2);
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .controls {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .control-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .control-btn:hover {
+            background: rgba(99, 102, 241, 0.1);
+            color: white;
+        }
+
+        /* Meal Container */
+        .meal-container {
+            max-width: 1400px;
+            margin: 100px auto 2rem;
+            padding: 0 2rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        .meal-header {
+            text-align: center;
+            margin-bottom: 3rem;
+            position: relative;
+        }
+
+        .meal-header h1 {
+            font-size: 3.5rem;
+            margin-bottom: 1rem;
+            background: linear-gradient(to right, var(--accent), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+            position: relative;
+            display: inline-block;
+        }
+
+        .meal-header h1::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 100px;
+            height: 5px;
+            background: var(--accent);
+            border-radius: 10px;
+        }
+
+        .meal-header p {
+            color: var(--gray);
+            max-width: 600px;
+            margin: 1.5rem auto 0;
+            line-height: 1.6;
+        }
+
+        /* 3D Model Section */
+        .model-section {
+            height: 500px;
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 25px;
+            margin-bottom: 3rem;
+            position: relative;
+            overflow: hidden;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            display: flex;
+        }
+
+        .model-info {
+            width: 40%;
+            padding: 2rem;
+            display: flex;
+            flex-direction: column;
+            justify-content: center;
+        }
+
+        .model-info h2 {
+            font-size: 2rem;
+            margin-bottom: 1.5rem;
+            color: var(--accent);
+        }
+
+        .model-info p {
+            color: var(--gray);
+            line-height: 1.7;
+            margin-bottom: 2rem;
+        }
+
+        .nutrient-facts {
+            display: grid;
+            grid-template-columns: repeat(2, 1fr);
+            gap: 1rem;
+        }
+
+        .nutrient-card {
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 15px;
+            padding: 1rem;
+            text-align: center;
+        }
+
+        .nutrient-value {
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: var(--accent);
+            margin-bottom: 0.3rem;
+        }
+
+        .nutrient-label {
+            font-size: 0.9rem;
+            color: var(--gray);
+        }
+
+        #model-container {
+            width: 60%;
+            height: 100%;
+            position: relative;
+        }
+
+        .model-controls {
+            position: absolute;
+            bottom: 20px;
+            left: 50%;
+            transform: translateX(-50%);
+            display: flex;
+            gap: 1rem;
+            z-index: 10;
+        }
+
+        .model-btn {
+            width: 50px;
+            height: 50px;
+            border-radius: 50%;
+            background: rgba(15, 23, 42, 0.8);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: white;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .model-btn:hover {
+            background: var(--accent);
+            transform: translateY(-5px);
+        }
+
+        /* Meal Form */
+        .meal-form {
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 25px;
+            padding: 2.5rem;
+            margin-bottom: 3rem;
+            backdrop-filter: blur(10px);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+        }
+
+        .form-grid {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 2rem;
+        }
+
+        .form-group {
+            position: relative;
+        }
+
+        .form-group label {
+            display: block;
+            margin-bottom: 0.8rem;
+            font-weight: 500;
+            color: var(--gray);
+        }
+
+        .form-group input,
+        .form-group select {
+            width: 100%;
+            padding: 1rem 1.5rem;
+            border-radius: 15px;
+            background: rgba(255, 255, 255, 0.05);
+            border: 1px solid rgba(255, 255, 255, 0.1);
+            color: white;
+            font-size: 1rem;
+            transition: all 0.3s ease;
+        }
+
+        .form-group input:focus,
+        .form-group select:focus {
+            outline: none;
+            border-color: var(--accent);
+            background: rgba(245, 158, 11, 0.1);
+            box-shadow: 0 0 0 3px rgba(245, 158, 11, 0.3);
+        }
+
+        .form-actions {
+            display: flex;
+            justify-content: center;
+            margin-top: 1.5rem;
+        }
+
+        .btn {
+            padding: 1rem 2.5rem;
+            border-radius: 15px;
+            font-weight: 600;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            border: none;
+            outline: none;
+            display: inline-flex;
+            align-items: center;
+            justify-content: center;
+            gap: 0.8rem;
+            font-size: 1.1rem;
+        }
+
+        .btn-generate {
+            background: var(--accent);
+            color: var(--dark);
+            box-shadow: 0 4px 20px rgba(245, 158, 11, 0.4);
+        }
+
+        .btn-generate:hover {
+            background: #e69008;
+            transform: translateY(-3px);
+            box-shadow: 0 6px 25px rgba(245, 158, 11, 0.5);
+        }
+
+        /* Meal Plan Section */
+        .meal-plan {
+            margin-top: 3rem;
+        }
+
+        .section-title {
+            font-size: 2rem;
+            margin-bottom: 2rem;
+            text-align: center;
+            position: relative;
+            display: inline-block;
+            left: 50%;
+            transform: translateX(-50%);
+        }
+
+        .section-title::after {
+            content: '';
+            position: absolute;
+            bottom: -10px;
+            left: 50%;
+            transform: translateX(-50%);
+            width: 60px;
+            height: 4px;
+            background: var(--accent);
+            border-radius: 10px;
+        }
+
+        .days-container {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(300px, 1fr));
+            gap: 2rem;
+            perspective: 1500px;
+        }
+
+        .day-card {
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 2rem;
+            transition: all 0.6s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+            backdrop-filter: blur(10px);
+            transform-style: preserve-3d;
+            position: relative;
+            overflow: hidden;
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.2);
+            cursor: pointer;
+        }
+
+        .day-card:hover {
+            transform: translateY(-10px) rotateX(5deg);
+            box-shadow: 0 25px 50px -12px rgba(0, 0, 0, 0.25);
+            border-color: rgba(245, 158, 11, 0.3);
+        }
+
+        .day-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: var(--accent);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.5s ease;
+        }
+
+        .day-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .card-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+            transform: translateZ(30px);
+        }
+
+        .day-title {
+            font-size: 1.5rem;
+            font-weight: 600;
+            color: var(--accent);
+        }
+
+        .calories {
+            background: rgba(16, 185, 129, 0.1);
+            color: var(--secondary);
+            padding: 0.3rem 1rem;
+            border-radius: 50px;
+            font-weight: 500;
+        }
+
+        .meals-container {
+            transform: translateZ(20px);
+        }
+
+        .meal {
+            margin-bottom: 1.5rem;
+            padding-bottom: 1.5rem;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+        }
+
+        .meal:last-child {
+            margin-bottom: 0;
+            padding-bottom: 0;
+            border-bottom: none;
+        }
+
+        .meal-title {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            margin-bottom: 1rem;
+            font-weight: 600;
+        }
+
+        .meal-title i {
+            color: var(--accent);
+        }
+
+        .meal-items {
+            list-style: none;
+        }
+
+        .meal-item {
+            padding: 0.5rem 0;
+            display: flex;
+            justify-content: space-between;
+        }
+
+        .meal-item:not(:last-child) {
+            border-bottom: 1px dashed rgba(255, 255, 255, 0.05);
+        }
+
+        .meal-name {
+            flex: 1;
+        }
+
+        .meal-calories {
+            color: var(--secondary);
+            font-weight: 500;
+        }
+
+        .card-footer {
+            margin-top: 1.5rem;
+            display: flex;
+            justify-content: center;
+            transform: translateZ(30px);
+        }
+
+        .view-recipe {
+            padding: 0.6rem 1.5rem;
+            border-radius: 50px;
+            background: rgba(245, 158, 11, 0.1);
+            color: var(--accent);
+            border: none;
+            cursor: pointer;
+            transition: all 0.3s ease;
+            display: flex;
+            align-items: center;
+            gap: 0.5rem;
+        }
+
+        .view-recipe:hover {
+            background: var(--accent);
+            color: var(--dark);
+            transform: translateY(-3px);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .model-section {
+                flex-direction: column;
+                height: auto;
+            }
+            
+            .model-info, #model-container {
+                width: 100%;
+            }
+            
+            .model-info {
+                padding: 1.5rem;
+            }
+            
+            #model-container {
+                height: 400px;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .meal-header h1 {
+                font-size: 2.8rem;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .meal-container {
+                padding: 0 1rem;
+                margin-top: 80px;
+            }
+            
+            .meal-header h1 {
+                font-size: 2.2rem;
+            }
+            
+            .meal-form {
+                padding: 1.5rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Elements -->
+    <div class="hero-pattern"></div>
+    <div class="gradient-overlay"></div>
     
-    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 mb-8">
-        <form id="meal-form">
-            <div class="grid md:grid-cols-3 gap-6">
-                <div>
-                    <label class="block mb-2">Daily Calories</label>
-                    <input type="number" name="calories" class="w-full p-3 border rounded-lg">
+    <!-- Top Navigation -->
+    <nav class="top-nav">
+        <div class="logo">
+            <i class="fas fa-dumbbell"></i>
+            <span>FitAI</span>
+        </div>
+        
+        <div class="nav-controls">
+            <div class="controls">
+                <div class="control-btn">
+                    <i class="fas fa-sun"></i>
                 </div>
-                
-                <div>
-                    <label class="block mb-2">Diet Preference</label>
-                    <select name="preference" class="w-full p-3 border rounded-lg">
-                        <option value="vegetarian">Vegetarian</option>
-                        <option value="non-vegetarian">Non-Vegetarian</option>
-                        <option value="vegan">Vegan</option>
-                    </select>
-                </div>
-                
-                <div>
-                    <label class="block mb-2">Allergies</label>
-                    <input type="text" name="allergies" placeholder="Nuts, dairy, etc." class="w-full p-3 border rounded-lg">
+                <div class="control-btn">
+                    <i class="fas fa-utensils"></i>
                 </div>
             </div>
             
-            <button type="submit" class="mt-6 bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition">
-                Generate Meal Plan
-            </button>
-        </form>
+            <div class="user-profile">
+                <div class="user-avatar">JS</div>
+                <div class="user-info">
+                    <div class="user-name">John Smith</div>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Meal Planner -->
+    <div class="meal-container">
+        <div class="meal-header">
+            <h1>Personalized Meal Planner</h1>
+            <p>Get your custom nutrition plan based on your dietary preferences and fitness goals</p>
+        </div>
+        
+        <!-- 3D Model Section -->
+        <div class="model-section">
+            <div class="model-info">
+                <h2>Balanced Nutrition</h2>
+                <p>Our AI creates meal plans that balance proteins, carbs, and healthy fats to fuel your body and support your fitness journey.</p>
+                
+                <div class="nutrient-facts">
+                    <div class="nutrient-card">
+                        <div class="nutrient-value">45%</div>
+                        <div class="nutrient-label">Carbohydrates</div>
+                    </div>
+                    <div class="nutrient-card">
+                        <div class="nutrient-value">30%</div>
+                        <div class="nutrient-label">Protein</div>
+                    </div>
+                    <div class="nutrient-card">
+                        <div class="nutrient-value">20%</div>
+                        <div class="nutrient-label">Healthy Fats</div>
+                    </div>
+                    <div class="nutrient-card">
+                        <div class="nutrient-value">5%</div>
+                        <div class="nutrient-label">Other</div>
+                    </div>
+                </div>
+            </div>
+            <div id="model-container"></div>
+            <div class="model-controls">
+                <div class="model-btn" id="rotateBtn">
+                    <i class="fas fa-sync"></i>
+                </div>
+                <div class="model-btn" id="zoomInBtn">
+                    <i class="fas fa-search-plus"></i>
+                </div>
+                <div class="model-btn" id="zoomOutBtn">
+                    <i class="fas fa-search-minus"></i>
+                </div>
+                <div class="model-btn" id="resetBtn">
+                    <i class="fas fa-redo"></i>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Meal Form -->
+        <div class="meal-form">
+            <div class="form-grid">
+                <div class="form-group">
+                    <label for="calories">Daily Calories</label>
+                    <input type="number" id="calories" placeholder="Enter target calories" value="2200">
+                </div>
+                
+                <div class="form-group">
+                    <label for="diet">Diet Type</label>
+                    <select id="diet">
+                        <option value="balanced">Balanced</option>
+                        <option value="vegetarian">Vegetarian</option>
+                        <option value="vegan">Vegan</option>
+                        <option value="keto">Keto</option>
+                        <option value="mediterranean">Mediterranean</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="allergies">Allergies</label>
+                    <select id="allergies">
+                        <option value="none">None</option>
+                        <option value="dairy">Dairy</option>
+                        <option value="gluten">Gluten</option>
+                        <option value="nuts">Nuts</option>
+                        <option value="seafood">Seafood</option>
+                    </select>
+                </div>
+                
+                <div class="form-group">
+                    <label for="preferences">Preferences</label>
+                    <select id="preferences">
+                        <option value="none">No Preferences</option>
+                        <option value="low-carb">Low Carb</option>
+                        <option value="high-protein">High Protein</option>
+                        <option value="low-fat">Low Fat</option>
+                    </select>
+                </div>
+            </div>
+            
+            <div class="form-actions">
+                <button class="btn btn-generate" id="generateBtn">
+                    <i class="fas fa-bolt"></i> Generate Meal Plan
+                </button>
+            </div>
+        </div>
+        
+        <!-- Meal Plan Section -->
+        <div class="meal-plan">
+            <h2 class="section-title">Your 7-Day Meal Plan</h2>
+            <div class="days-container" id="daysContainer">
+                <!-- Meal plan days will be generated here -->
+            </div>
+        </div>
     </div>
     
-    <div id="meal-plan" class="animate-fade-in"></div>
-</div>
-
-<script>
-    const mealForm = document.getElementById('meal-form');
-    const mealPlanContainer = document.getElementById('meal-plan');
-    
-    mealForm.addEventListener('submit', async (e) => {
-        e.preventDefault();
+    <script>
+        // Initialize GSAP animations
+        gsap.registerPlugin(ScrollTrigger);
         
-        const formData = {
-            calories: mealForm.elements.calories.value,
-            preference: mealForm.elements.preference.value,
-            allergies: mealForm.elements.allergies.value
-        };
+        // Three.js variables
+        let scene, camera, renderer, model;
+        let isRotating = true;
+        let zoomLevel = 8;
         
-        // Show loading animation
-        mealPlanContainer.innerHTML = `<div class="text-center py-12">
-            <i class="fas fa-spinner fa-spin text-4xl text-indigo-600 mb-4"></i>
-            <p>Creating your personalized meal plan...</p>
-        </div>`;
+        // Food items
+        const foods = [];
         
-        try {
-            const response = await fetch('/generate/meal', {
-                method: 'POST',
-                headers: { 'Content-Type': 'application/json' },
-                body: JSON.stringify(formData)
+        // Initialize Three.js scene
+        function init() {
+            // Create scene
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x0f172a);
+            
+            // Create camera
+            camera = new THREE.PerspectiveCamera(75, document.getElementById('model-container').offsetWidth / document.getElementById('model-container').offsetHeight, 0.1, 1000);
+            camera.position.z = zoomLevel;
+            
+            // Create renderer
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(document.getElementById('model-container').offsetWidth, 
+                             document.getElementById('model-container').offsetHeight);
+            document.getElementById('model-container').appendChild(renderer.domElement);
+            
+            // Add lighting
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.5);
+            scene.add(ambientLight);
+            
+            const directionalLight = new THREE.DirectionalLight(0xf59e0b, 1);
+            directionalLight.position.set(5, 5, 5);
+            scene.add(directionalLight);
+            
+            const pointLight = new THREE.PointLight(0x10b981, 1);
+            pointLight.position.set(-5, -5, 5);
+            scene.add(pointLight);
+            
+            // Create food models
+            createFoodModels();
+            
+            // Handle window resize
+            window.addEventListener('resize', onWindowResize, false);
+            
+            // Start animation loop
+            animate();
+        }
+        
+        // Create food models
+        function createFoodModels() {
+            // Plate
+            const plateGeometry = new THREE.CylinderGeometry(2, 2, 0.2, 32);
+            const plateMaterial = new THREE.MeshPhongMaterial({ 
+                color: 0xffffff,
+                shininess: 100 
+            });
+            const plate = new THREE.Mesh(plateGeometry, plateMaterial);
+            plate.rotation.x = Math.PI / 2;
+            plate.position.y = -1;
+            scene.add(plate);
+            
+            // Fruits
+            const fruitGeometry = new THREE.SphereGeometry(0.5, 32, 32);
+            const fruitMaterial = new THREE.MeshPhongMaterial({ 
+                color: 0xff6b6b,
+                shininess: 50 
             });
             
-            const mealPlan = await response.json();
-            renderMealPlan(mealPlan);
-        } catch (error) {
-            mealPlanContainer.innerHTML = `<div class="text-red-500 text-center p-8">
-                Failed to generate meal plan. Please try again.
-            </div>`;
+            const fruit1 = new THREE.Mesh(fruitGeometry, fruitMaterial);
+            fruit1.position.set(-1, -0.7, 0);
+            scene.add(fruit1);
+            foods.push(fruit1);
+            
+            const fruit2 = new THREE.Mesh(fruitGeometry, fruitMaterial);
+            fruit2.position.set(0.5, -0.7, -0.8);
+            scene.add(fruit2);
+            foods.push(fruit2);
+            
+            const fruit3 = new THREE.Mesh(fruitGeometry, fruitMaterial);
+            fruit3.position.set(0.8, -0.7, 0.7);
+            scene.add(fruit3);
+            foods.push(fruit3);
+            
+            // Vegetables
+            const vegGeometry = new THREE.CylinderGeometry(0.3, 0.3, 1, 32);
+            const vegMaterial = new THREE.MeshPhongMaterial({ 
+                color: 0x51cf66,
+                shininess: 50 
+            });
+            
+            const veg1 = new THREE.Mesh(vegGeometry, vegMaterial);
+            veg1.position.set(-0.5, -0.7, 1);
+            veg1.rotation.z = Math.PI / 4;
+            scene.add(veg1);
+            foods.push(veg1);
+            
+            const veg2 = new THREE.Mesh(vegGeometry, vegMaterial);
+            veg2.position.set(1, -0.7, 0);
+            veg2.rotation.z = -Math.PI / 6;
+            scene.add(veg2);
+            foods.push(veg2);
+            
+            // Protein
+            const proteinGeometry = new THREE.BoxGeometry(1, 0.5, 1);
+            const proteinMaterial = new THREE.MeshPhongMaterial({ 
+                color: 0xff922b,
+                shininess: 30 
+            });
+            
+            const protein = new THREE.Mesh(proteinGeometry, proteinMaterial);
+            protein.position.set(0, -0.8, -0.5);
+            scene.add(protein);
+            foods.push(protein);
         }
-    });
-    
-    function renderMealPlan(plan) {
-        let html = `<div class="grid gap-6">`;
         
-        plan.days.forEach(day => {
-            html += `
-            <div class="day-card bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
-                <div class="card-header bg-indigo-100 dark:bg-gray-700 p-4 font-bold">
-                    ${day.name}
-                </div>
-                <div class="p-4">
-                    <div class="meal-section mb-4">
-                        <h3 class="font-bold mb-2">Breakfast</h3>
-                        <p>${day.breakfast}</p>
-                    </div>
-                    <div class="meal-section mb-4">
-                        <h3 class="font-bold mb-2">Lunch</h3>
-                        <p>${day.lunch}</p>
-                    </div>
-                    <div class="meal-section">
-                        <h3 class="font-bold mb-2">Dinner</h3>
-                        <p>${day.dinner}</p>
-                    </div>
-                </div>
-            </div>`;
+        // Handle window resize
+        function onWindowResize() {
+            camera.aspect = document.getElementById('model-container').offsetWidth / 
+                            document.getElementById('model-container').offsetHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(document.getElementById('model-container').offsetWidth, 
+                             document.getElementById('model-container').offsetHeight);
+        }
+        
+        // Animation loop
+        function animate() {
+            requestAnimationFrame(animate);
+            
+            if (isRotating) {
+                scene.rotation.y += 0.005;
+            }
+            
+            // Animate foods
+            foods.forEach((food, index) => {
+                food.rotation.y += 0.01;
+                food.position.y = -0.7 + Math.sin(Date.now() * 0.001 + index) * 0.1;
+            });
+            
+            renderer.render(scene, camera);
+        }
+        
+        // Initialize the scene
+        init();
+        
+        // Model controls
+        document.getElementById('rotateBtn').addEventListener('click', function() {
+            isRotating = !isRotating;
+            this.style.background = isRotating ? 'var(--accent)' : 'rgba(15, 23, 42, 0.8)';
         });
         
-        html += `</div>`;
-        mealPlanContainer.innerHTML = html;
-    }
-</script>
-<script>
-  // Hero animation
-  gsap.from('.hero-content', {
-    duration: 1,
-    y: 50,
-    opacity: 0,
-    stagger: 0.3
-  });
-</script>
+        document.getElementById('zoomInBtn').addEventListener('click', function() {
+            if (zoomLevel > 4) {
+                zoomLevel -= 0.5;
+                camera.position.z = zoomLevel;
+            }
+        });
+        
+        document.getElementById('zoomOutBtn').addEventListener('click', function() {
+            if (zoomLevel < 12) {
+                zoomLevel += 0.5;
+                camera.position.z = zoomLevel;
+            }
+        });
+        
+        document.getElementById('resetBtn').addEventListener('click', function() {
+            zoomLevel = 8;
+            camera.position.z = zoomLevel;
+            scene.rotation.y = 0;
+        });
+        
+        // Generate meal plan
+        document.getElementById('generateBtn').addEventListener('click', function() {
+            const generateBtn = this;
+            const originalText = generateBtn.innerHTML;
+            generateBtn.innerHTML = '<i class="fas fa-spinner fa-spin"></i> Generating...';
+            generateBtn.disabled = true;
+            
+            // Simulate API call delay
+            setTimeout(() => {
+                generateBtn.innerHTML = originalText;
+                generateBtn.disabled = false;
+                
+                // Generate meal plan
+                generateMealPlan();
+                
+                // Scroll to results
+                document.querySelector('.meal-plan').scrollIntoView({ 
+                    behavior: 'smooth' 
+                });
+            }, 2000);
+        });
+        
+        // Generate meal plan cards
+        function generateMealPlan() {
+            const daysContainer = document.getElementById('daysContainer');
+            daysContainer.innerHTML = '';
+            
+            const days = [
+                "Monday", "Tuesday", "Wednesday", "Thursday", "Friday", "Saturday", "Sunday"
+            ];
+            
+            const mealTemplates = [
+                {
+                    breakfast: ["Greek Yogurt Parfait", "Oatmeal with Berries", "Avocado Toast"],
+                    lunch: ["Quinoa Salad", "Chicken Wrap", "Vegetable Stir Fry"],
+                    dinner: ["Grilled Salmon", "Vegetable Curry", "Beef Tacos"],
+                    snack: ["Protein Shake", "Fruit & Nuts", "Hummus & Veggies"]
+                },
+                {
+                    breakfast: ["Smoothie Bowl", "Eggs Benedict", "Chia Pudding"],
+                    lunch: ["Lentil Soup", "Tuna Salad", "Falafel Wrap"],
+                    dinner: ["Chicken Stir Fry", "Mushroom Risotto", "Shrimp Pasta"],
+                    snack: ["Rice Cakes", "Greek Yogurt", "Dark Chocolate"]
+                },
+                {
+                    breakfast: ["Protein Pancakes", "Breakfast Burrito", "Acai Bowl"],
+                    lunch: ["Chicken Caesar Salad", "Vegetable Soup", "Sushi Bowl"],
+                    dinner: ["Beef Burgers", "Vegetable Lasagna", "Fish & Chips"],
+                    snack: ["Protein Bar", "Cottage Cheese", "Trail Mix"]
+                }
+            ];
+            
+            days.forEach((day, index) => {
+                const template = mealTemplates[index % mealTemplates.length];
+                const calories = 1800 + Math.floor(Math.random() * 400);
+                
+                const card = document.createElement('div');
+                card.className = 'day-card';
+                card.style.opacity = '0';
+                card.style.transform = 'translateY(30px)';
+                
+                card.innerHTML = `
+                    <div class="card-header">
+                        <div class="day-title">${day}</div>
+                        <div class="calories">${calories} kcal</div>
+                    </div>
+                    <div class="meals-container">
+                        <div class="meal">
+                            <div class="meal-title">
+                                <i class="fas fa-sun"></i>
+                                <span>Breakfast</span>
+                            </div>
+                            <ul class="meal-items">
+                                <li class="meal-item">
+                                    <span class="meal-name">${template.breakfast[0]}</span>
+                                    <span class="meal-calories">320 kcal</span>
+                                </li>
+                                <li class="meal-item">
+                                    <span class="meal-name">Green Tea</span>
+                                    <span class="meal-calories">5 kcal</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="meal">
+                            <div class="meal-title">
+                                <i class="fas fa-cloud-sun"></i>
+                                <span>Lunch</span>
+                            </div>
+                            <ul class="meal-items">
+                                <li class="meal-item">
+                                    <span class="meal-name">${template.lunch[0]}</span>
+                                    <span class="meal-calories">450 kcal</span>
+                                </li>
+                                <li class="meal-item">
+                                    <span class="meal-name">Fresh Juice</span>
+                                    <span class="meal-calories">120 kcal</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="meal">
+                            <div class="meal-title">
+                                <i class="fas fa-moon"></i>
+                                <span>Dinner</span>
+                            </div>
+                            <ul class="meal-items">
+                                <li class="meal-item">
+                                    <span class="meal-name">${template.dinner[0]}</span>
+                                    <span class="meal-calories">550 kcal</span>
+                                </li>
+                                <li class="meal-item">
+                                    <span class="meal-name">Side Salad</span>
+                                    <span class="meal-calories">150 kcal</span>
+                                </li>
+                            </ul>
+                        </div>
+                        <div class="meal">
+                            <div class="meal-title">
+                                <i class="fas fa-apple-alt"></i>
+                                <span>Snack</span>
+                            </div>
+                            <ul class="meal-items">
+                                <li class="meal-item">
+                                    <span class="meal-name">${template.snack[0]}</span>
+                                    <span class="meal-calories">200 kcal</span>
+                                </li>
+                            </ul>
+                        </div>
+                    </div>
+                    <div class="card-footer">
+                        <button class="view-recipe">
+                            <i class="fas fa-book-open"></i> View Recipes
+                        </button>
+                    </div>
+                `;
+                
+                daysContainer.appendChild(card);
+                
+                // Animate card in
+                gsap.to(card, {
+                    delay: index * 0.2,
+                    duration: 0.8,
+                    opacity: 1,
+                    y: 0,
+                    ease: "back.out(1.7)"
+                });
+            });
+        }
+        
+        // Initial animations
+        gsap.from('.meal-header', {
+            duration: 1,
+            y: -30,
+            opacity: 0,
+            delay: 0.3,
+            ease: "power3.out"
+        });
+        
+        gsap.from('.model-section', {
+            duration: 1,
+            y: 50,
+            opacity: 0,
+            delay: 0.6,
+            ease: "power3.out"
+        });
+        
+        gsap.from('.meal-form', {
+            duration: 1,
+            y: 50,
+            opacity: 0,
+            delay: 0.8,
+            ease: "power3.out"
+        });
+        
+        // Generate initial meal plan
+        window.addEventListener('load', generateMealPlan);
+    </script>
+</body>
+</html>
