@@ -1,0 +1,103 @@
+{% extends "base.html" %}
+
+{% block content %}
+<div class="max-w-4xl mx-auto">
+    <h1 class="text-3xl font-bold text-center mb-8">Personalized Meal Plan</h1>
+    
+    <div class="bg-white dark:bg-gray-800 rounded-xl shadow-lg p-6 mb-8">
+        <form id="meal-form">
+            <div class="grid md:grid-cols-3 gap-6">
+                <div>
+                    <label class="block mb-2">Daily Calories</label>
+                    <input type="number" name="calories" class="w-full p-3 border rounded-lg">
+                </div>
+                
+                <div>
+                    <label class="block mb-2">Diet Preference</label>
+                    <select name="preference" class="w-full p-3 border rounded-lg">
+                        <option value="vegetarian">Vegetarian</option>
+                        <option value="non-vegetarian">Non-Vegetarian</option>
+                        <option value="vegan">Vegan</option>
+                    </select>
+                </div>
+                
+                <div>
+                    <label class="block mb-2">Allergies</label>
+                    <input type="text" name="allergies" placeholder="Nuts, dairy, etc." class="w-full p-3 border rounded-lg">
+                </div>
+            </div>
+            
+            <button type="submit" class="mt-6 bg-indigo-600 text-white px-6 py-3 rounded-lg hover:bg-indigo-700 transition">
+                Generate Meal Plan
+            </button>
+        </form>
+    </div>
+    
+    <div id="meal-plan" class="animate-fade-in"></div>
+</div>
+
+<script>
+    const mealForm = document.getElementById('meal-form');
+    const mealPlanContainer = document.getElementById('meal-plan');
+    
+    mealForm.addEventListener('submit', async (e) => {
+        e.preventDefault();
+        
+        const formData = {
+            calories: mealForm.elements.calories.value,
+            preference: mealForm.elements.preference.value,
+            allergies: mealForm.elements.allergies.value
+        };
+        
+        // Show loading animation
+        mealPlanContainer.innerHTML = `<div class="text-center py-12">
+            <i class="fas fa-spinner fa-spin text-4xl text-indigo-600 mb-4"></i>
+            <p>Creating your personalized meal plan...</p>
+        </div>`;
+        
+        try {
+            const response = await fetch('/generate/meal', {
+                method: 'POST',
+                headers: { 'Content-Type': 'application/json' },
+                body: JSON.stringify(formData)
+            });
+            
+            const mealPlan = await response.json();
+            renderMealPlan(mealPlan);
+        } catch (error) {
+            mealPlanContainer.innerHTML = `<div class="text-red-500 text-center p-8">
+                Failed to generate meal plan. Please try again.
+            </div>`;
+        }
+    });
+    
+    function renderMealPlan(plan) {
+        let html = `<div class="grid gap-6">`;
+        
+        plan.days.forEach(day => {
+            html += `
+            <div class="day-card bg-white dark:bg-gray-800 rounded-xl shadow-lg overflow-hidden">
+                <div class="card-header bg-indigo-100 dark:bg-gray-700 p-4 font-bold">
+                    ${day.name}
+                </div>
+                <div class="p-4">
+                    <div class="meal-section mb-4">
+                        <h3 class="font-bold mb-2">Breakfast</h3>
+                        <p>${day.breakfast}</p>
+                    </div>
+                    <div class="meal-section mb-4">
+                        <h3 class="font-bold mb-2">Lunch</h3>
+                        <p>${day.lunch}</p>
+                    </div>
+                    <div class="meal-section">
+                        <h3 class="font-bold mb-2">Dinner</h3>
+                        <p>${day.dinner}</p>
+                    </div>
+                </div>
+            </div>`;
+        });
+        
+        html += `</div>`;
+        mealPlanContainer.innerHTML = html;
+    }
+</script>
