@@ -1,5 +1,8 @@
-flask
-firebase-admin
-gunicorn
-python-dotenv
-openai
+Flask>=2.2
+flask_sqlalchemy>=3.0
+firebase-admin>=6.0.0
+python-dotenv>=1.0
+openai>=1.0.0
+requests>=2.28
+gunicorn>=20.1
+flask_cors>=3.0
