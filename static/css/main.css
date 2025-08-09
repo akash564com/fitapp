@@ -1,3 +1,38 @@
+/* Custom scrollbar */
+::-webkit-scrollbar {
+    width: 8px;
+}
+::-webkit-scrollbar-thumb {
+    background: #4f46e5;
+    border-radius: 4px;
+}
+
+/* Smooth fade-in animations */
+.fade-in {
+    animation: fadeIn 0.5s ease-in-out;
+}
+@keyframes fadeIn {
+    from { opacity: 0; transform: translateY(10px); }
+    to { opacity: 1; transform: translateY(0); }
+}
+
+/* Dark mode overrides */
+html.dark body {
+    background-color: #0f172a;
+    color: #f1f5f9;
+}
+
+body {
+    font-family: 'Poppins', sans-serif;
+}
+
+.lottie-container {
+    width: 300px;
+    height: 300px;
+    margin: auto;
+}
+
+
 /* main.css - complements Tailwind utilities for small custom styling */
 :root{ --brand: #06b6d4; --bg: #0b1220; --muted: rgba(255,255,255,0.6) }
 html,body{height:100%}
