@@ -1,0 +1,42 @@
+/* main.css - complements Tailwind utilities for small custom styling */
+:root{ --brand: #06b6d4; --bg: #0b1220; --muted: rgba(255,255,255,0.6) }
+html,body{height:100%}
+body{background:linear-gradient(180deg,#071026,#021018); color:#e6eef8; font-family:Inter,system-ui,Segoe UI,Roboto,Arial}
+.container{max-width:1100px;margin:0 auto;padding:1rem}
+
+/* header/nav */
+.navbar{display:flex;align-items:center;justify-content:space-between;padding:1rem 0}
+.brand{font-weight:700;letter-spacing:0.4px}
+.nav-links a{margin-left:1rem;color:var(--muted);text-decoration:none}
+
+/* buttons */
+.btn{display:inline-flex;align-items:center;gap:.5rem;padding:.6rem .9rem;border-radius:12px;border:0;cursor:pointer}
+.btn-primary{background:var(--brand);color:#012}
+.btn-outline{background:transparent;border:1px solid rgba(255,255,255,0.06)}
+
+/* cards */
+.card{background:linear-gradient(180deg,rgba(255,255,255,0.02),rgba(255,255,255,0.01));border-radius:14px;padding:1rem;box-shadow:0 6px 18px rgba(2,6,23,0.6)}
+
+/* chat/messages */
+.messages{max-height:60vh;overflow:auto;padding:1rem}
+.message{padding:.6rem .75rem;border-radius:10px;margin:.35rem 0;max-width:80%}
+.message.user{margin-left:auto;background:linear-gradient(90deg,rgba(255,255,255,0.03),rgba(255,255,255,0.02))}
+.message.bot{background:rgba(255,255,255,0.03)}
+
+/* workout/meal styling */
+.workout-plan .plan-heading{font-weight:700;margin-top:0.5rem}
+.workout-plan .plan-exercise{margin-left:0.5rem}
+.meal-plan{display:grid;grid-template-columns:repeat(auto-fit,minmax(220px,1fr));gap:1rem}
+.meal-day-card{background:rgba(255,255,255,0.02);padding:.75rem;border-radius:10px}
+.meal-day-card h3{margin:0 0 .5rem 0}
+
+/* toast */
+.site-toast{position:fixed;right:20px;bottom:20px;background:rgba(0,0,0,0.6);padding:.6rem 1rem;border-radius:10px;color:#fff;opacity:0;transform:translateY(8px);transition:all .25s}
+.site-toast.visible{opacity:1;transform:translateY(0)}
+
+/* forms */
+.form-row{display:flex;gap:.5rem;margin-bottom:.75rem}
+input[type=text],input[type=number],select,textarea{background:transparent;border:1px solid rgba(255,255,255,0.06);padding:.6rem;border-radius:8px;color:inherit;width:100%}
+
+/* responsive */
+@media (max-width:640px){.container{padding:.75rem}.navbar{flex-direction:column;align-items:flex-start}}
