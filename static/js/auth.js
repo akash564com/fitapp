@@ -3,13 +3,12 @@ import { initializeApp } from 'https://www.gstatic.com/firebasejs/9.24.0/firebas
 import { getAuth, signInWithEmailAndPassword, createUserWithEmailAndPassword, onAuthStateChanged, signOut } from 'https://www.gstatic.com/firebasejs/9.24.0/firebase-auth.js';
 
 const firebaseConfig = {
-    // replace with your firebase config
-    apiKey: "REPLACE",
-    authDomain: "REPLACE",
-    projectId: "REPLACE",
-    storageBucket: "REPLACE",
-    messagingSenderId: "REPLACE",
-    appId: "REPLACE"
+  apiKey: "AIzaSyDW6WAqJ4kDumFgdrsR99Xcy4ipH3ePBoY",
+  authDomain: "fitai-app-fe8df.firebaseapp.com",
+  projectId: "fitai-app-fe8df",
+  storageBucket: "fitai-app-fe8df.firebasestorage.app",
+  messagingSenderId: "519087526504",
+  appId: "1:519087526504:web:6005a09cfc553ed5c421dd"
 };
 
 const app = initializeApp(firebaseConfig);
