@@ -1,0 +1,1103 @@
+<!DOCTYPE html>
+<html lang="en" class="dark">
+<head>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <title>FitAI - Dashboard</title>
+    <!-- Fonts & Icons -->
+    <link href="https://fonts.googleapis.com/css2?family=Poppins:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/font-awesome/6.4.0/css/all.min.css">
+    <!-- Animation Libraries -->
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/gsap.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/gsap/3.11.4/ScrollTrigger.min.js"></script>
+    <script src="https://cdnjs.cloudflare.com/ajax/libs/three.js/r128/three.min.js"></script>
+    <link rel="stylesheet" href="https://cdnjs.cloudflare.com/ajax/libs/animate.css/4.1.1/animate.min.css">
+    <script src="https://unpkg.com/@lottiefiles/lottie-player@latest/dist/lottie-player.js"></script>
+    <style>
+        :root {
+            --primary: #6366f1;
+            --primary-dark: #4f46e5;
+            --secondary: #10b981;
+            --accent: #f59e0b;
+            --dark: #0f172a;
+            --light: #f8fafc;
+            --gray: #94a3b8;
+            --card-bg: rgba(15, 23, 42, 0.7);
+        }
+
+        * {
+            margin: 0;
+            padding: 0;
+            box-sizing: border-box;
+            font-family: 'Poppins', sans-serif;
+        }
+
+        body {
+            background: linear-gradient(135deg, #0f172a, #1e293b);
+            color: var(--light);
+            min-height: 100vh;
+            overflow-x: hidden;
+        }
+
+        .hero-pattern {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: 
+                radial-gradient(circle at 10% 20%, rgba(99, 102, 241, 0.15) 0%, transparent 20%),
+                radial-gradient(circle at 80% 80%, rgba(16, 185, 129, 0.15) 0%, transparent 20%),
+                radial-gradient(circle at 30% 70%, rgba(245, 158, 11, 0.1) 0%, transparent 20%);
+            z-index: -1;
+        }
+
+        .gradient-overlay {
+            position: fixed;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: radial-gradient(ellipse at center, rgba(15, 23, 42, 0) 0%, rgba(15, 23, 42, 1) 70%);
+            z-index: -1;
+        }
+
+        /* Top Navigation */
+        .top-nav {
+            background: rgba(15, 23, 42, 0.8);
+            backdrop-filter: blur(10px);
+            border-bottom: 1px solid rgba(148, 163, 184, 0.1);
+            padding: 1rem 2rem;
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            position: fixed;
+            top: 0;
+            width: 100%;
+            z-index: 90;
+            height: 70px;
+        }
+
+        .logo {
+            display: flex;
+            align-items: center;
+            gap: 0.75rem;
+            font-size: 1.5rem;
+            font-weight: 700;
+            color: white;
+        }
+
+        .logo i {
+            color: var(--primary);
+            font-size: 1.8rem;
+        }
+
+        .nav-controls {
+            display: flex;
+            align-items: center;
+            gap: 1.5rem;
+        }
+
+        .user-profile {
+            display: flex;
+            align-items: center;
+            gap: 0.8rem;
+            background: rgba(99, 102, 241, 0.1);
+            padding: 0.5rem 1rem;
+            border-radius: 50px;
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .user-profile:hover {
+            background: rgba(99, 102, 241, 0.2);
+        }
+
+        .user-avatar {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: var(--primary);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-weight: 600;
+            font-size: 1.1rem;
+        }
+
+        .controls {
+            display: flex;
+            gap: 1rem;
+        }
+
+        .control-btn {
+            width: 40px;
+            height: 40px;
+            border-radius: 50%;
+            background: rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .control-btn:hover {
+            background: rgba(99, 102, 241, 0.1);
+            color: white;
+        }
+
+        /* Dashboard Container */
+        .dashboard-container {
+            max-width: 1400px;
+            margin: 100px auto 2rem;
+            padding: 0 2rem;
+            position: relative;
+            z-index: 2;
+        }
+
+        /* Dashboard Header */
+        .dashboard-header {
+            margin-bottom: 3rem;
+            position: relative;
+        }
+
+        .welcome-section {
+            display: flex;
+            justify-content: space-between;
+            align-items: flex-end;
+            margin-bottom: 2rem;
+        }
+
+        .welcome-text h1 {
+            font-size: 2.8rem;
+            margin-bottom: 0.5rem;
+            background: linear-gradient(to right, var(--primary), var(--secondary));
+            -webkit-background-clip: text;
+            -webkit-text-fill-color: transparent;
+        }
+
+        .welcome-text p {
+            color: var(--gray);
+            max-width: 600px;
+        }
+
+        .date-section {
+            text-align: right;
+            color: var(--gray);
+        }
+
+        .current-date {
+            font-size: 1.2rem;
+            margin-bottom: 0.5rem;
+        }
+
+        .current-time {
+            font-size: 1.8rem;
+            font-weight: 600;
+        }
+
+        /* Stats Overview */
+        .stats-overview {
+            display: grid;
+            grid-template-columns: repeat(auto-fit, minmax(250px, 1fr));
+            gap: 1.5rem;
+            margin-bottom: 3rem;
+        }
+
+        .stat-card {
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 1.5rem;
+            backdrop-filter: blur(10px);
+            transition: all 0.4s ease;
+            position: relative;
+            overflow: hidden;
+            perspective: 1000px;
+            transform-style: preserve-3d;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .stat-card:hover {
+            transform: translateY(-10px) rotateX(5deg);
+            box-shadow: 0 20px 40px rgba(0, 0, 0, 0.3);
+            border-color: rgba(99, 102, 241, 0.3);
+        }
+
+        .stat-card::before {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 5px;
+            background: var(--primary);
+            transform: scaleX(0);
+            transform-origin: left;
+            transition: transform 0.5s ease;
+        }
+
+        .stat-card:hover::before {
+            transform: scaleX(1);
+        }
+
+        .stat-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1rem;
+        }
+
+        .stat-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 15px;
+            background: rgba(99, 102, 241, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: var(--primary);
+        }
+
+        .stat-trend {
+            font-size: 0.9rem;
+            color: var(--secondary);
+            display: flex;
+            align-items: center;
+            gap: 0.3rem;
+        }
+
+        .stat-content {
+            margin-top: 1rem;
+        }
+
+        .stat-value {
+            font-size: 2.2rem;
+            font-weight: 700;
+            margin-bottom: 0.3rem;
+        }
+
+        .stat-label {
+            color: var(--gray);
+            font-size: 0.95rem;
+        }
+
+        /* Dashboard Grid */
+        .dashboard-grid {
+            display: grid;
+            grid-template-columns: 2fr 1fr;
+            gap: 2rem;
+        }
+
+        .chart-container {
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-bottom: 2rem;
+            backdrop-filter: blur(10px);
+            transition: all 0.4s ease;
+            perspective: 1000px;
+            transform-style: preserve-3d;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .chart-container:hover {
+            transform: translateY(-5px) rotateX(3deg);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+        }
+
+        .chart-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .chart-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .chart-actions {
+            display: flex;
+            gap: 0.8rem;
+        }
+
+        .chart-action-btn {
+            width: 35px;
+            height: 35px;
+            border-radius: 10px;
+            background: rgba(255, 255, 255, 0.05);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--gray);
+            cursor: pointer;
+            transition: all 0.3s ease;
+        }
+
+        .chart-action-btn:hover {
+            background: rgba(99, 102, 241, 0.1);
+            color: white;
+        }
+
+        .chart-content {
+            height: 300px;
+            position: relative;
+        }
+
+        /* 3D Chart Container */
+        #chart-3d {
+            width: 100%;
+            height: 100%;
+        }
+
+        /* Recent Activity */
+        .activity-container {
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 2rem;
+            backdrop-filter: blur(10px);
+            transition: all 0.4s ease;
+            perspective: 1000px;
+            transform-style: preserve-3d;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .activity-container:hover {
+            transform: translateY(-5px) rotateX(3deg);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+        }
+
+        .activity-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .activity-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .activity-list {
+            list-style: none;
+        }
+
+        .activity-item {
+            padding: 1rem 0;
+            border-bottom: 1px solid rgba(255, 255, 255, 0.05);
+            display: flex;
+            gap: 1rem;
+        }
+
+        .activity-item:last-child {
+            border-bottom: none;
+        }
+
+        .activity-icon {
+            width: 40px;
+            height: 40px;
+            border-radius: 12px;
+            background: rgba(99, 102, 241, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            color: var(--primary);
+            flex-shrink: 0;
+        }
+
+        .activity-content {
+            flex: 1;
+        }
+
+        .activity-name {
+            font-weight: 500;
+            margin-bottom: 0.3rem;
+        }
+
+        .activity-time {
+            color: var(--gray);
+            font-size: 0.9rem;
+        }
+
+        .activity-value {
+            font-weight: 600;
+            color: var(--secondary);
+        }
+
+        /* Goals Section */
+        .goals-container {
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-top: 2rem;
+            backdrop-filter: blur(10px);
+            transition: all 0.4s ease;
+            perspective: 1000px;
+            transform-style: preserve-3d;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .goals-container:hover {
+            transform: translateY(-5px) rotateX(3deg);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+        }
+
+        .goals-header {
+            display: flex;
+            justify-content: space-between;
+            align-items: center;
+            margin-bottom: 1.5rem;
+        }
+
+        .goals-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .goals-list {
+            list-style: none;
+        }
+
+        .goal-item {
+            margin-bottom: 1.5rem;
+        }
+
+        .goal-header {
+            display: flex;
+            justify-content: space-between;
+            margin-bottom: 0.5rem;
+        }
+
+        .goal-name {
+            font-weight: 500;
+        }
+
+        .goal-progress {
+            font-weight: 500;
+            color: var(--secondary);
+        }
+
+        .progress-bar {
+            height: 8px;
+            background: rgba(255, 255, 255, 0.05);
+            border-radius: 4px;
+            overflow: hidden;
+        }
+
+        .progress-value {
+            height: 100%;
+            background: var(--primary);
+            border-radius: 4px;
+            position: relative;
+        }
+
+        .progress-value::after {
+            content: '';
+            position: absolute;
+            top: 0;
+            left: 0;
+            width: 100%;
+            height: 100%;
+            background: linear-gradient(to right, transparent, rgba(255, 255, 255, 0.2));
+        }
+
+        /* Motivation Section */
+        .motivation-container {
+            background: var(--card-bg);
+            border: 1px solid rgba(255, 255, 255, 0.05);
+            border-radius: 20px;
+            padding: 2rem;
+            margin-top: 2rem;
+            backdrop-filter: blur(10px);
+            transition: all 0.4s ease;
+            perspective: 1000px;
+            transform-style: preserve-3d;
+            box-shadow: 0 10px 30px rgba(0, 0, 0, 0.2);
+        }
+
+        .motivation-container:hover {
+            transform: translateY(-5px) rotateX(3deg);
+            box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+        }
+
+        .motivation-header {
+            display: flex;
+            align-items: center;
+            gap: 1rem;
+            margin-bottom: 1.5rem;
+        }
+
+        .motivation-icon {
+            width: 50px;
+            height: 50px;
+            border-radius: 15px;
+            background: rgba(245, 158, 11, 0.1);
+            display: flex;
+            align-items: center;
+            justify-content: center;
+            font-size: 1.5rem;
+            color: var(--accent);
+        }
+
+        .motivation-title {
+            font-size: 1.3rem;
+            font-weight: 600;
+        }
+
+        .quote {
+            font-style: italic;
+            color: var(--gray);
+            line-height: 1.7;
+            margin-bottom: 1.5rem;
+            position: relative;
+            padding-left: 1.5rem;
+        }
+
+        .quote::before {
+            content: '"';
+            position: absolute;
+            top: -15px;
+            left: 0;
+            font-size: 3rem;
+            color: var(--accent);
+            opacity: 0.3;
+        }
+
+        .author {
+            text-align: right;
+            font-weight: 500;
+            color: var(--accent);
+        }
+
+        /* Responsive Design */
+        @media (max-width: 1200px) {
+            .dashboard-grid {
+                grid-template-columns: 1fr;
+            }
+        }
+
+        @media (max-width: 992px) {
+            .welcome-section {
+                flex-direction: column;
+                align-items: flex-start;
+                gap: 1rem;
+            }
+            
+            .date-section {
+                text-align: left;
+            }
+        }
+
+        @media (max-width: 768px) {
+            .dashboard-container {
+                padding: 0 1rem;
+                margin-top: 80px;
+            }
+            
+            .welcome-text h1 {
+                font-size: 2.2rem;
+            }
+        }
+    </style>
+</head>
+<body>
+    <!-- Background Elements -->
+    <div class="hero-pattern"></div>
+    <div class="gradient-overlay"></div>
+    
+    <!-- Top Navigation -->
+    <nav class="top-nav">
+        <div class="logo">
+            <i class="fas fa-dumbbell"></i>
+            <span>FitAI</span>
+        </div>
+        
+        <div class="nav-controls">
+            <div class="controls">
+                <div class="control-btn">
+                    <i class="fas fa-sun"></i>
+                </div>
+                <div class="control-btn">
+                    <i class="fas fa-bell"></i>
+                    <span class="notification-badge" style="position: absolute; top: -5px; right: -5px; background: var(--secondary); color: white; width: 20px; height: 20px; border-radius: 50%; font-size: 0.7rem; display: flex; align-items: center; justify-content: center;">3</span>
+                </div>
+            </div>
+            
+            <div class="user-profile">
+                <div class="user-avatar">JS</div>
+                <div class="user-info">
+                    <div class="user-name">John Smith</div>
+                </div>
+            </div>
+        </div>
+    </nav>
+    
+    <!-- Dashboard Container -->
+    <div class="dashboard-container">
+        <!-- Dashboard Header -->
+        <div class="dashboard-header">
+            <div class="welcome-section">
+                <div class="welcome-text">
+                    <h1>Welcome Back, John!</h1>
+                    <p>Here's your fitness progress and insights. Keep up the great work!</p>
+                </div>
+                <div class="date-section">
+                    <div class="current-date">Thursday, November 16, 2023</div>
+                    <div class="current-time" id="currentTime">10:24 AM</div>
+                </div>
+            </div>
+            
+            <!-- Stats Overview -->
+            <div class="stats-overview">
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon">
+                            <i class="fas fa-fire"></i>
+                        </div>
+                        <div class="stat-trend">
+                            <i class="fas fa-arrow-up"></i> 12%
+                        </div>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-value">1,842</div>
+                        <div class="stat-label">Calories Burned</div>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon">
+                            <i class="fas fa-dumbbell"></i>
+                        </div>
+                        <div class="stat-trend">
+                            <i class="fas fa-arrow-up"></i> 8%
+                        </div>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-value">12</div>
+                        <div class="stat-label">Workouts Completed</div>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon">
+                            <i class="fas fa-apple-alt"></i>
+                        </div>
+                        <div class="stat-trend">
+                            <i class="fas fa-arrow-up"></i> 15%
+                        </div>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-value">86%</div>
+                        <div class="stat-label">Nutrition Goals</div>
+                    </div>
+                </div>
+                
+                <div class="stat-card">
+                    <div class="stat-header">
+                        <div class="stat-icon">
+                            <i class="fas fa-trophy"></i>
+                        </div>
+                        <div class="stat-trend">
+                            <i class="fas fa-arrow-up"></i> 3 days
+                        </div>
+                    </div>
+                    <div class="stat-content">
+                        <div class="stat-value">21</div>
+                        <div class="stat-label">Day Streak</div>
+                    </div>
+                </div>
+            </div>
+        </div>
+        
+        <!-- Dashboard Grid -->
+        <div class="dashboard-grid">
+            <div class="left-column">
+                <!-- 3D Progress Chart -->
+                <div class="chart-container">
+                    <div class="chart-header">
+                        <div class="chart-title">Fitness Progress</div>
+                        <div class="chart-actions">
+                            <div class="chart-action-btn">
+                                <i class="fas fa-expand"></i>
+                            </div>
+                            <div class="chart-action-btn">
+                                <i class="fas fa-sync"></i>
+                            </div>
+                        </div>
+                    </div>
+                    <div class="chart-content">
+                        <div id="chart-3d"></div>
+                    </div>
+                </div>
+                
+                <!-- Recent Activity -->
+                <div class="activity-container">
+                    <div class="activity-header">
+                        <div class="activity-title">Recent Activity</div>
+                        <div class="chart-action-btn">
+                            <i class="fas fa-history"></i>
+                        </div>
+                    </div>
+                    <ul class="activity-list">
+                        <li class="activity-item">
+                            <div class="activity-icon">
+                                <i class="fas fa-running"></i>
+                            </div>
+                            <div class="activity-content">
+                                <div class="activity-name">Morning Run</div>
+                                <div class="activity-time">Today, 7:30 AM • 45 minutes</div>
+                            </div>
+                            <div class="activity-value">420 kcal</div>
+                        </li>
+                        <li class="activity-item">
+                            <div class="activity-icon">
+                                <i class="fas fa-dumbbell"></i>
+                            </div>
+                            <div class="activity-content">
+                                <div class="activity-name">Upper Body Workout</div>
+                                <div class="activity-time">Yesterday, 6:00 PM • 60 minutes</div>
+                            </div>
+                            <div class="activity-value">380 kcal</div>
+                        </li>
+                        <li class="activity-item">
+                            <div class="activity-icon">
+                                <i class="fas fa-apple-alt"></i>
+                            </div>
+                            <div class="activity-content">
+                                <div class="activity-name">Meal Logged</div>
+                                <div class="activity-time">Yesterday, 1:30 PM • Lunch</div>
+                            </div>
+                            <div class="activity-value">620 kcal</div>
+                        </li>
+                        <li class="activity-item">
+                            <div class="activity-icon">
+                                <i class="fas fa-weight"></i>
+                            </div>
+                            <div class="activity-content">
+                                <div class="activity-name">Weight Measurement</div>
+                                <div class="activity-time">November 15 • Weekly Check</div>
+                            </div>
+                            <div class="activity-value">-1.2 kg</div>
+                        </li>
+                    </ul>
+                </div>
+            </div>
+            
+            <div class="right-column">
+                <!-- Goals Section -->
+                <div class="goals-container">
+                    <div class="goals-header">
+                        <div class="goals-title">Your Goals</div>
+                        <div class="chart-action-btn">
+                            <i class="fas fa-edit"></i>
+                        </div>
+                    </div>
+                    <ul class="goals-list">
+                        <li class="goal-item">
+                            <div class="goal-header">
+                                <div class="goal-name">Lose Weight</div>
+                                <div class="goal-progress">65%</div>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-value" style="width: 65%"></div>
+                            </div>
+                        </li>
+                        <li class="goal-item">
+                            <div class="goal-header">
+                                <div class="goal-name">Build Muscle</div>
+                                <div class="goal-progress">42%</div>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-value" style="width: 42%"></div>
+                            </div>
+                        </li>
+                        <li class="goal-item">
+                            <div class="goal-header">
+                                <div class="goal-name">Run 5K</div>
+                                <div class="goal-progress">78%</div>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-value" style="width: 78%"></div>
+                            </div>
+                        </li>
+                        <li class="goal-item">
+                            <div class="goal-header">
+                                <div class="goal-name">Daily Steps</div>
+                                <div class="goal-progress">91%</div>
+                            </div>
+                            <div class="progress-bar">
+                                <div class="progress-value" style="width: 91%"></div>
+                            </div>
+                        </li>
+                    </ul>
+                </div>
+                
+                <!-- Motivation Section -->
+                <div class="motivation-container">
+                    <div class="motivation-header">
+                        <div class="motivation-icon">
+                            <i class="fas fa-quote-right"></i>
+                        </div>
+                        <div class="motivation-title">Daily Motivation</div>
+                    </div>
+                    <div class="quote">
+                        The only bad workout is the one that didn't happen. Every step you take is progress, no matter how small. Keep pushing, stay consistent, and trust the process. Your future self will thank you for the effort you put in today.
+                    </div>
+                    <div class="author">- FitAI Coach</div>
+                </div>
+                
+                <!-- Achievements -->
+                <div class="goals-container">
+                    <div class="goals-header">
+                        <div class="goals-title">Achievements</div>
+                        <div class="chart-action-btn">
+                            <i class="fas fa-medal"></i>
+                        </div>
+                    </div>
+                    <div style="display: grid; grid-template-columns: repeat(3, 1fr); gap: 1rem; text-align: center;">
+                        <div>
+                            <div style="width: 70px; height: 70px; margin: 0 auto; background: rgba(245, 158, 11, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: var(--accent);">
+                                <i class="fas fa-fire"></i>
+                            </div>
+                            <div style="margin-top: 0.5rem; font-size: 0.9rem;">10k Calories</div>
+                        </div>
+                        <div>
+                            <div style="width: 70px; height: 70px; margin: 0 auto; background: rgba(99, 102, 241, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: var(--primary);">
+                                <i class="fas fa-dumbbell"></i>
+                            </div>
+                            <div style="margin-top: 0.5rem; font-size: 0.9rem;">50 Workouts</div>
+                        </div>
+                        <div>
+                            <div style="width: 70px; height: 70px; margin: 0 auto; background: rgba(16, 185, 129, 0.1); border-radius: 50%; display: flex; align-items: center; justify-content: center; font-size: 1.5rem; color: var(--secondary);">
+                                <i class="fas fa-star"></i>
+                            </div>
+                            <div style="margin-top: 0.5rem; font-size: 0.9rem;">30 Day Streak</div>
+                        </div>
+                    </div>
+                </div>
+            </div>
+        </div>
+    </div>
+    
+    <script>
+        // Initialize GSAP animations
+        gsap.registerPlugin(ScrollTrigger);
+        
+        // Update current time
+        function updateTime() {
+            const now = new Date();
+            const hours = now.getHours();
+            const minutes = now.getMinutes().toString().padStart(2, '0');
+            const ampm = hours >= 12 ? 'PM' : 'AM';
+            const displayHours = hours % 12 || 12;
+            
+            document.getElementById('currentTime').textContent = `${displayHours}:${minutes} ${ampm}`;
+        }
+        
+        // Initial time update
+        updateTime();
+        
+        // Update time every minute
+        setInterval(updateTime, 60000);
+        
+        // Three.js variables
+        let scene, camera, renderer, bars = [];
+        
+        // Initialize Three.js scene
+        function initChart() {
+            // Create scene
+            scene = new THREE.Scene();
+            scene.background = new THREE.Color(0x0f172a);
+            
+            // Create camera
+            const container = document.getElementById('chart-3d');
+            camera = new THREE.PerspectiveCamera(75, container.clientWidth / container.clientHeight, 0.1, 1000);
+            camera.position.z = 15;
+            camera.position.y = 5;
+            camera.position.x = 0;
+            camera.lookAt(0, 0, 0);
+            
+            // Create renderer
+            renderer = new THREE.WebGLRenderer({ antialias: true, alpha: true });
+            renderer.setSize(container.clientWidth, container.clientHeight);
+            container.appendChild(renderer.domElement);
+            
+            // Add lighting
+            const ambientLight = new THREE.AmbientLight(0xffffff, 0.6);
+            scene.add(ambientLight);
+            
+            const directionalLight = new THREE.DirectionalLight(0x6366f1, 1);
+            directionalLight.position.set(5, 5, 5);
+            scene.add(directionalLight);
+            
+            const pointLight = new THREE.PointLight(0x10b981, 1);
+            pointLight.position.set(-5, -5, 5);
+            scene.add(pointLight);
+            
+            // Create bars
+            const data = [
+                { label: 'Mon', value: 4, color: 0x6366f1 },
+                { label: 'Tue', value: 7, color: 0x6366f1 },
+                { label: 'Wed', value: 5, color: 0x6366f1 },
+                { label: 'Thu', value: 9, color: 0x10b981 },
+                { label: 'Fri', value: 6, color: 0x6366f1 },
+                { label: 'Sat', value: 8, color: 0xf59e0b },
+                { label: 'Sun', value: 3, color: 0x6366f1 }
+            ];
+            
+            const barSpacing = 2;
+            const startX = -((data.length - 1) * barSpacing) / 2;
+            
+            data.forEach((item, index) => {
+                const geometry = new THREE.BoxGeometry(1, item.value, 1);
+                const material = new THREE.MeshPhongMaterial({ 
+                    color: item.color,
+                    shininess: 50,
+                    emissive: new THREE.Color(item.color).multiplyScalar(0.2)
+                });
+                
+                const bar = new THREE.Mesh(geometry, material);
+                bar.position.x = startX + index * barSpacing;
+                bar.position.y = item.value / 2;
+                
+                scene.add(bar);
+                bars.push(bar);
+                
+                // Add label
+                const canvas = document.createElement('canvas');
+                const context = canvas.getContext('2d');
+                canvas.width = 128;
+                canvas.height = 64;
+                
+                context.fillStyle = '#f8fafc';
+                context.font = 'bold 24px Poppins';
+                context.textAlign = 'center';
+                context.fillText(item.label, canvas.width / 2, 40);
+                
+                const texture = new THREE.CanvasTexture(canvas);
+                const labelMaterial = new THREE.SpriteMaterial({ map: texture });
+                const label = new THREE.Sprite(labelMaterial);
+                label.position.set(bar.position.x, -1, 0);
+                label.scale.set(2, 1, 1);
+                scene.add(label);
+            });
+            
+            // Add grid
+            const gridHelper = new THREE.GridHelper(15, 15, 0x94a3b8, 0x94a3b8);
+            gridHelper.position.y = -0.5;
+            scene.add(gridHelper);
+            
+            // Handle window resize
+            window.addEventListener('resize', onChartResize, false);
+            
+            // Start animation
+            animateChart();
+        }
+        
+        // Handle chart resize
+        function onChartResize() {
+            const container = document.getElementById('chart-3d');
+            camera.aspect = container.clientWidth / container.clientHeight;
+            camera.updateProjectionMatrix();
+            renderer.setSize(container.clientWidth, container.clientHeight);
+        }
+        
+        // Animation loop
+        function animateChart() {
+            requestAnimationFrame(animateChart);
+            
+            // Animate bars
+            bars.forEach((bar, index) => {
+                bar.rotation.x += 0.01;
+                bar.rotation.y += 0.01;
+            });
+            
+            // Rotate camera slowly
+            camera.position.x = Math.sin(Date.now() * 0.0005) * 10;
+            camera.position.z = Math.cos(Date.now() * 0.0005) * 10;
+            camera.lookAt(0, 0, 0);
+            
+            renderer.render(scene, camera);
+        }
+        
+        // Initialize the chart when the page loads
+        window.addEventListener('load', initChart);
+        
+        // Animate stat cards on scroll
+        gsap.utils.toArray('.stat-card').forEach((card, index) => {
+            gsap.from(card, {
+                scrollTrigger: {
+                    trigger: card,
+                    start: "top 90%",
+                },
+                duration: 0.8,
+                y: 50,
+                opacity: 0,
+                delay: index * 0.1,
+                ease: "back.out(1.7)"
+            });
+        });
+        
+        // Animate chart container
+        gsap.from('.chart-container', {
+            scrollTrigger: {
+                trigger: '.chart-container',
+                start: "top 90%",
+            },
+            duration: 1,
+            y: 50,
+            opacity: 0,
+            ease: "power3.out"
+        });
+        
+        // Animate activity container
+        gsap.from('.activity-container', {
+            scrollTrigger: {
+                trigger: '.activity-container',
+                start: "top 90%",
+            },
+            duration: 1,
+            y: 50,
+            opacity: 0,
+            delay: 0.2,
+            ease: "power3.out"
+        });
+        
+        // Animate goals container
+        gsap.from('.goals-container', {
+            scrollTrigger: {
+                trigger: '.goals-container',
+                start: "top 90%",
+            },
+            duration: 1,
+            y: 50,
+            opacity: 0,
+            ease: "power3.out"
+        });
+        
+        // Animate motivation container
+        gsap.from('.motivation-container', {
+            scrollTrigger: {
+                trigger: '.motivation-container',
+                start: "top 90%",
+            },
+            duration: 1,
+            y: 50,
+            opacity: 0,
+            delay: 0.2,
+            ease: "power3.out"
+        });
+    </script>
+</body>
+</html>
